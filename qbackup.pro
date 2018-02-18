@@ -24,11 +24,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += \
-        main.cpp \
-        mainwindow.cpp
-
-HEADERS += \
-        mainwindow.h
+        main.cpp \ 
+    mainwindow/mainwindow.cpp \
+    backuptask/backuptask.cpp
 
 FORMS += \
-        mainwindow.ui
+    mainwindow/mainwindow.ui
+
+HEADERS += \
+    mainwindow/mainwindow.h \
+    backuptask/backuptask.h
