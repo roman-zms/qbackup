@@ -1,10 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include <QTreeWidget>
-#include <QTreeWidgetItem>
-#include <QInputDialog>
-#include <QSettings>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -12,6 +8,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     loadTasksWidget();
+
+    connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
+            this, 			SLOT(openTaskSettings(QTreeWidgetItem*)));
 }
 
 MainWindow::~MainWindow()
@@ -36,7 +35,6 @@ void MainWindow::loadTask(QString name)
 
 void MainWindow::addNewTask()
 {
-    /*
     QString name;
     bool succes;
 
@@ -47,10 +45,10 @@ void MainWindow::addNewTask()
                 QLineEdit::Normal,"",&succes);
     } while(succes && name.isEmpty());
 
-    QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget, name.append(",/path/from/,/path/to/").split(','));
+    QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget,
+                                                name.append(",/path/from/,/path/to/").split(','));
     item->setCheckState(0, Qt::CheckState::Unchecked);
     ui->treeWidget->addTopLevelItem(item);
-    */
 }
 
 void MainWindow::removeTask()
@@ -66,6 +64,16 @@ void MainWindow::removeTask()
     settings->deleteLater();
 
     loadTasksWidget();
+}
+
+void MainWindow::openTaskSettings(QTreeWidgetItem *item)
+{
+    QString name = item->text(0);
+    TaskSettings *taskSettings = new TaskSettings(name);
+
+    connect(taskSettings, SIGNAL(finished(int)), taskSettings, SLOT(deleteLater()));
+    taskSettings->show();
+
 }
 
 void MainWindow::loadTasksWidget()

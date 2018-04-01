@@ -2,7 +2,13 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QInputDialog>
+#include <QSettings>
+
 #include "backuptask/backuptask.h"
+#include "tasksettings/tasksettings.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,6 +28,8 @@ private slots:
 
     void addNewTask();
     void removeTask();
+
+    void openTaskSettings(QTreeWidgetItem*);
 
     void loadTasksWidget();
     void loadTask(QString name);
