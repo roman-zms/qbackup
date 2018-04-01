@@ -1,8 +1,6 @@
 #include "mainwindow/mainwindow.h"
 #include <QApplication>
 
-#include "tests/tasktest.h"
-
 int main(int argc, char *argv[])
 {
     QCoreApplication::setApplicationName("qBackup");
