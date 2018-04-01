@@ -10,9 +10,5 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    //taskTest test;
-    //test.show();
-
-
     return a.exec();
 }
