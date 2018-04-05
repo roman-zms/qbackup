@@ -27,7 +27,8 @@ SOURCES += \
         main.cpp \ 
     mainwindow/mainwindow.cpp \
     backuptask/backuptask.cpp \
-    mainwindow/tasksettings/tasksettings.cpp
+    mainwindow/tasksettings/tasksettings.cpp \
+    backuptask/backuptaskspecs.cpp
 
 FORMS += \
     mainwindow/mainwindow.ui \
@@ -36,4 +37,5 @@ FORMS += \
 HEADERS += \
     mainwindow/mainwindow.h \
     backuptask/backuptask.h \
-    mainwindow/tasksettings/tasksettings.h
+    mainwindow/tasksettings/tasksettings.h \
+    backuptask/backuptaskspecs.h

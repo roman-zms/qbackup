@@ -27,7 +27,7 @@ void MainWindow::loadTask(QString name)
 {
     QStringList taskSettings;
     BackupTask *task = new BackupTask(name);
-    taskSettings << task->getName() << task->getPathFrom() << task->getPathTo();
+    taskSettings << task->specs->getName() << task->specs->getPathFrom() << task->specs->getPathTo();
 
     QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget, taskSettings);
     ui->treeWidget->addTopLevelItem(item);
@@ -43,12 +43,19 @@ void MainWindow::addNewTask()
                 this, tr("Name"),
                 tr("Enter new backup name:"),
                 QLineEdit::Normal,"",&succes);
-    } while(succes && name.isEmpty());
 
-    QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget,
-                                                name.append(",/path/from/,/path/to/").split(','));
-    item->setCheckState(0, Qt::CheckState::Unchecked);
+        if(succes==false)
+            return;
+
+    } while(name.isEmpty());
+
+    QString itemString = "";
+    QTreeWidgetItem *item = new QTreeWidgetItem(
+                ui->treeWidget, QString("").append(name + ",/path/from/,/path/to/").split(','));
+    //item->setCheckState(0, Qt::CheckState::Unchecked);
     ui->treeWidget->addTopLevelItem(item);
+
+    BackupTask task(name);
 }
 
 void MainWindow::removeTask()
@@ -80,9 +87,11 @@ void MainWindow::loadTasksWidget()
 {
     ui->treeWidget->clear();
 
-    QSettings *setttings = new QSettings(this);
-    QStringList taskNames = setttings->childGroups();
-    setttings->deleteLater();
+    QSettings *settings = new QSettings(this);
+    settings->beginGroup("Tasks");
+
+    QStringList taskNames = settings->childGroups();
+    settings->deleteLater();
 
     foreach(QString taskName, taskNames) {
         loadTask(taskName);
