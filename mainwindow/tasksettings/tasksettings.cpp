@@ -1,3 +1,4 @@
+#include "backuptask/backuptask.h"
 #include "tasksettings.h"
 #include "ui_tasksettings.h"
 
