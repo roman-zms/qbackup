@@ -20,15 +20,17 @@ BackupTask::~BackupTask()
 
 void BackupTask::initTask()
 {
-    if(settings->contains(specs->getName())) {
-        this->specs->setPathFrom(settings->value("PathFrom").toString());
-        this->specs->setPathTo(settings->value("PathTo").toString());
+    this->specs->setPathFrom(settings->value("PathFrom").toString());
+    this->specs->setPathTo(settings->value("PathTo").toString());
 
-        this->specs->setAutoBackup(settings->value("AutoBackup").toBool());
-        this->specs->setUpload(settings->value("Upload").toBool());
-    } else {
-        saveTask();
-    }
+    this->specs->setAutoBackup(settings->value("AutoBackup").toBool());
+    this->specs->setUpload(settings->value("Upload").toBool());
+
+    QList<QVariant> days = settings->value("Days").toList();
+    for(int i=0; i<7; i++)
+        this->specs->getSchedule()->setDay(i, days.at(i).toBool());
+
+    this->specs->getSchedule()->setTime(settings->value("Time").toTime());
 }
 
 void BackupTask::saveTask()
@@ -37,4 +39,6 @@ void BackupTask::saveTask()
     settings->setValue("PathTo",      this->specs->getPathTo());
     settings->setValue("AutoBackup",  this->specs->getAutoBackup());
     settings->setValue("Upload",      this->specs->getUpload());
+    settings->setValue("Days",		  this->specs->getSchedule()->getDays());
+    settings->setValue("Time",		  this->specs->getSchedule()->getTime());
 }

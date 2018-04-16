@@ -2,6 +2,7 @@
 #define BACKUPTASKSPECS_H
 
 #include <QObject>
+#include "taskschedule.h"
 
 class BackupTaskSpecs : public QObject
 {
@@ -23,6 +24,8 @@ public:
     bool getUpload() const;
     void setUpload(bool value);
 
+    TaskSchedule *getSchedule() const;
+
 signals:
 
 public slots:
@@ -31,6 +34,8 @@ private:
 
     QString pathFrom;
     QString pathTo;
+
+    TaskSchedule *schedule;
 
     bool autoBackup;
     bool upload;

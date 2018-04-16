@@ -10,14 +10,61 @@ TaskSettings::TaskSettings(QString name, QWidget *parent) :
 {
     ui->setupUi(this);
 
-    connect(ui->checkBox, SIGNAL(toggled(bool)), ui->treeWidget, SLOT(setEnabled(bool)));
-    connect(ui->checkBox, SIGNAL(toggled(bool)), ui->timeEdit, SLOT(setEnabled(bool)));
+    connect(ui->autoBackupCheckBox, SIGNAL(toggled(bool)), ui->treeWidget, SLOT(setEnabled(bool)));
+    connect(ui->autoBackupCheckBox, SIGNAL(toggled(bool)), ui->timeEdit, SLOT(setEnabled(bool)));
 
+    connect(ui->treeWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(treeWidgetItemClicked(QModelIndex)));
+    connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
+            this, 			SLOT(treeWidgetItemChanged(QTreeWidgetItem*,int)));
+
+    task = new BackupTask(name, this);
+    this->setWindowTitle(task->specs->getName());
+    init();
 }
 
 TaskSettings::~TaskSettings()
 {
     delete ui;
+}
+
+void TaskSettings::init()
+{
+    for(int i=0; i<7; i++) _days.append(false);
+
+    ui->lineEditFrom->setText(task->specs->getPathFrom());
+    ui->lineEditTo->setText(task->specs->getPathTo());
+
+    ui->uploadCheckBox->setChecked(task->specs->getUpload());
+
+    ui->autoBackupCheckBox->setChecked(task->specs->getAutoBackup());
+    for(int i=0; i<7; i++) {
+        Qt::CheckState state;
+        if(task->specs->getSchedule()->getDay(i) == true)
+            state = Qt::Checked;
+        else
+            state = Qt::Unchecked;
+        QTreeWidgetItem *item = ui->treeWidget->topLevelItem(i);
+        QString name = item->text(0);
+        item->setCheckState(0, state);
+        _days.replace(i, state);
+        //ui->treeWidget->itemAt(i, 0)->setCheckState(0, state);
+    }
+}
+
+void TaskSettings::save()
+{
+    task->specs->setPathFrom(ui->lineEditFrom->text());
+    task->specs->setPathTo(ui->lineEditTo->text());
+
+    task->specs->setUpload(ui->uploadCheckBox->isChecked());
+    task->specs->setAutoBackup(ui->autoBackupCheckBox->isChecked());
+
+    //for(int i=0; i<7; i++)
+    //    task->specs->getSchedule()->setDay(i, _days.at(i));
+
+    for(int i=0; i<7; i++) {
+        task->specs->getSchedule()->setDay(i, _days.at(i));
+    }
 }
 
 void TaskSettings::on_fromPushButton_clicked()
@@ -32,4 +79,29 @@ void TaskSettings::on_toPushButton_clicked()
     ui->lineEditTo->setText(dir);
 }
 
+void TaskSettings::treeWidgetItemChanged(QTreeWidgetItem *item, int)
+{
+    //int row = ui->treeWidget->indexOfTopLevelItem(item);
 
+    //////TaskSchedule *schedule = task->specs->getSchedule();
+    //////schedule->setDay(row, item->checkState(0));
+
+    //_days.replace(row, item->checkState(0));
+
+    //qDebug() << row << " " << item->text(0) <<" "<<item->checkState(0);
+}
+
+void TaskSettings::treeWidgetItemClicked(QModelIndex index)
+{
+    int row = index.row();
+    bool checked = ui->treeWidget->topLevelItem(row)->checkState(0);
+    _days.replace(row, checked);
+}
+
+
+void TaskSettings::on_buttonBox_accepted()
+{
+    save();
+    this->accept();
+    this->deleteLater();
+}
