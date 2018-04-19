@@ -9,6 +9,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     loadTasksWidget();
 
+    taskQueue = new TaskQueue(this);
+    taskQueue->hide();
+
     connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this, 			SLOT(openTaskSettings(QTreeWidgetItem*)));
 }
@@ -101,4 +104,15 @@ void MainWindow::loadTasksWidget()
 void MainWindow::on_actionRemoveTask_triggered()
 {
     removeTask();
+}
+
+void MainWindow::on_actionShow_queue_triggered()
+{
+    taskQueue->show();
+}
+
+void MainWindow::on_actionRunBackup_triggered()
+{
+    BackupTask *task = new BackupTask(ui->treeWidget->selectedItems().first()->text(0));
+    this->taskQueue->addTask(task->specs);
 }

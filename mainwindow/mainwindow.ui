@@ -76,7 +76,7 @@
      <x>0</x>
      <y>0</y>
      <width>466</width>
-     <height>20</height>
+     <height>23</height>
     </rect>
    </property>
   </widget>
@@ -103,6 +103,8 @@
    <addaction name="actionRemoveTask"/>
    <addaction name="separator"/>
    <addaction name="actionRunBackup"/>
+   <addaction name="separator"/>
+   <addaction name="actionShow_queue"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionRunBackup">
@@ -118,6 +120,11 @@
   <action name="actionRemoveTask">
    <property name="text">
     <string>Remove Task</string>
+   </property>
+  </action>
+  <action name="actionShow_queue">
+   <property name="text">
+    <string>Show Queue</string>
    </property>
   </action>
  </widget>
