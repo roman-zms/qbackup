@@ -15,6 +15,9 @@ public:
 
     BackupTaskSpecs *specs;
 
+public slots:
+    void sync();
+
 private:
     void initTask();
     void saveTask();

@@ -6,7 +6,8 @@
 
 TaskSettings::TaskSettings(QString name, QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::TaskSettings)
+    ui(new Ui::TaskSettings),
+    task(new BackupTask(name, this))
 {
     ui->setupUi(this);
 
@@ -17,7 +18,7 @@ TaskSettings::TaskSettings(QString name, QWidget *parent) :
     connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
             this, 			SLOT(treeWidgetItemChanged(QTreeWidgetItem*,int)));
 
-    task = new BackupTask(name, this);
+    //task = new BackupTask(name, this);
     this->setWindowTitle(task->specs->getName());
     init();
 }
@@ -65,6 +66,7 @@ void TaskSettings::save()
     for(int i=0; i<7; i++) {
         task->specs->getSchedule()->setDay(i, _days.at(i));
     }
+    task->sync();
 }
 
 void TaskSettings::on_fromPushButton_clicked()

@@ -9,6 +9,7 @@
 
 #include "backuptask/backuptask.h"
 #include "tasksettings/tasksettings.h"
+#include "queue/taskqueue.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,8 +35,13 @@ private slots:
     void loadTasksWidget();
     void loadTask(QString name);
 
+    void on_actionShow_queue_triggered();
+
+    void on_actionRunBackup_triggered();
+
 private:
     Ui::MainWindow *ui;
+    TaskQueue *taskQueue;
 };
 
 #endif // MAINWINDOW_H

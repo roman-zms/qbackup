@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -22,6 +22,14 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+win32 {
+    INCLUDEPATH += D:/Qt/quazip/include
+    DEPENDPATH += D:/Qt/quazip/include
+    LIBS += -LD:/Qt/quazip/lib/ -lquazip
+} else {
+    LIBS += -lquazip5
+}
+
 
 SOURCES += \
         main.cpp \ 
@@ -29,15 +37,26 @@ SOURCES += \
     backuptask/backuptask.cpp \
     mainwindow/tasksettings/tasksettings.cpp \
     backuptask/backuptaskspecs.cpp \
-    backuptask/taskschedule.cpp
+    backuptask/taskschedule.cpp \
+    queue/taskqueue.cpp \
+    queue/progressbardelegate.cpp \
+    compressor/compressor.cpp \
+    compressor/compressorwrapper.cpp \
+    uploader/ydapi.cpp
 
 FORMS += \
     mainwindow/mainwindow.ui \
-    mainwindow/tasksettings/tasksettings.ui
+    mainwindow/tasksettings/tasksettings.ui \
+    queue/taskqueue.ui
 
 HEADERS += \
     mainwindow/mainwindow.h \
     backuptask/backuptask.h \
     mainwindow/tasksettings/tasksettings.h \
     backuptask/backuptaskspecs.h \
-    backuptask/taskschedule.h
+    backuptask/taskschedule.h \
+    queue/taskqueue.h \
+    queue/progressbardelegate.h \
+    compressor/compressor.h \
+    compressor/compressorwrapper.h \
+    uploader/ydapi.h

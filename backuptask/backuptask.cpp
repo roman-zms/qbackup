@@ -17,6 +17,10 @@ BackupTask::~BackupTask()
     settings->deleteLater();
 }
 
+void BackupTask::sync()
+{
+    saveTask();
+}
 
 void BackupTask::initTask()
 {
@@ -28,7 +32,11 @@ void BackupTask::initTask()
 
     QList<QVariant> days = settings->value("Days").toList();
     for(int i=0; i<7; i++)
+    if(!days.isEmpty()){
         this->specs->getSchedule()->setDay(i, days.at(i).toBool());
+    } else {
+        this->specs->getSchedule()->setDay(i, false);
+    }
 
     this->specs->getSchedule()->setTime(settings->value("Time").toTime());
 }
@@ -41,4 +49,5 @@ void BackupTask::saveTask()
     settings->setValue("Upload",      this->specs->getUpload());
     settings->setValue("Days",		  this->specs->getSchedule()->getDays());
     settings->setValue("Time",		  this->specs->getSchedule()->getTime());
+    settings->sync();
 }
