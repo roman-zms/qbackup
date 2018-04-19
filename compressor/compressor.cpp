@@ -1,7 +1,12 @@
 #include "compressor.h"
 
-#include <quazip5/quazipfile.h>
+#ifdef Q_OS_WIN32
+#include <quazip/quazipfile.h>
+#endif
 
+#ifdef Q_OS_LINUX
+#include <quazip5/quazipfile.h>
+#endif
 
 Compressor::Compressor(QObject *parent) : QObject(parent)
 {
@@ -19,6 +24,11 @@ void Compressor::compressDir(QString dir, QString archiveFile)
     compressedSize = 0;
 
     QuaZip zip(archiveFile);
+
+#ifdef Q_OS_WIN32
+    zip.setFileNameCodec("IBM866");
+#endif
+
     QDir().mkpath(QFileInfo(archiveFile).absolutePath());
 
     if(zip.open(QuaZip::mdCreate) == false){
