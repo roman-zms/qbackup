@@ -66,6 +66,7 @@ void MainWindow::removeTask()
     QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 
     QSettings *settings = new QSettings(this);
+    settings->beginGroup("Tasks");
 
     foreach(QTreeWidgetItem *item, items){
         settings->remove(item->text(0));
@@ -82,6 +83,7 @@ void MainWindow::openTaskSettings(QTreeWidgetItem *item)
     TaskSettings *taskSettings = new TaskSettings(name);
 
     connect(taskSettings, SIGNAL(finished(int)), taskSettings, SLOT(deleteLater()));
+    connect(taskSettings, SIGNAL(accepted()), this, SLOT(loadTasksWidget()));
     taskSettings->show();
 
 }
@@ -113,6 +115,9 @@ void MainWindow::on_actionShow_queue_triggered()
 
 void MainWindow::on_actionRunBackup_triggered()
 {
-    BackupTask *task = new BackupTask(ui->treeWidget->selectedItems().first()->text(0));
-    this->taskQueue->addTask(task->specs);
+    if(ui->treeWidget->selectedItems().empty()) return;
+    foreach (QTreeWidgetItem *item, ui->treeWidget->selectedItems()) {
+        BackupTask *task = new BackupTask(item->text(0));
+        this->taskQueue->addTask(task->specs);
+    }
 }

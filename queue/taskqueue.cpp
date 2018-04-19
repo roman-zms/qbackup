@@ -75,23 +75,34 @@ void TaskQueue::start()
 {
     if(currentOperation != nothing) return;
 
-    currentTask = taskList.takeFirst();
-    compress();
+    if(!taskList.empty()) {
+        currentTask = taskList.takeFirst();
+        compress();
+    }
 }
 
 void TaskQueue::compress()
 {
     QString archiveName = genArchiveName(currentTask.first);
     connect(compressor, &CompressorWrapper::compressProgress, [=](qint64 done, qint64 total){
-        currentTask.second->setText(1, QString::number( (qint64)((100*sent)/total) ));
+        currentTask.second->setText(1, QString::number( (qint64)((100*done)/total) ));
     });
 
+    currentOperation = compressing;
     compressor->compressDir(currentTask.first->getPathFrom(), archiveName);
 }
 
 void TaskQueue::upload()
 {
-    compressor->disconnect(&CompressorWrapper::compressProgress);
+    QObject::disconnect(compressor, &CompressorWrapper::compressProgress, 0, 0);
+    completedOperations++;
+
+    if(currentTask.first->getUpload()) {
+        currentOperation = uploading;
+        currentTask.second->setText(2, "100");
+    }
+    currentOperation = nothing;
+    start();
 }
 
 void TaskQueue::stop()
@@ -126,4 +137,9 @@ void TaskQueue::updateTaskProgressBar(qint64 done, qint64 total)
 
     QString progress = QString::number( (qint64)((100*done)/total) );
     currentTask.second->setText(column, progress);
+}
+
+void TaskQueue::on_startButton_clicked()
+{
+    this->start();
 }

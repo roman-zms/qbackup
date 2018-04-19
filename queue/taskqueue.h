@@ -33,6 +33,8 @@ private slots:
 
     void updateTaskProgressBar(qint64 done, qint64 total);
 
+    void on_startButton_clicked();
+
 private:
     void init();
     QString genArchiveName(BackupTaskSpecs *task);

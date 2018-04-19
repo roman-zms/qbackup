@@ -17,6 +17,10 @@ BackupTask::~BackupTask()
     settings->deleteLater();
 }
 
+void BackupTask::sync()
+{
+    saveTask();
+}
 
 void BackupTask::initTask()
 {
@@ -45,4 +49,5 @@ void BackupTask::saveTask()
     settings->setValue("Upload",      this->specs->getUpload());
     settings->setValue("Days",		  this->specs->getSchedule()->getDays());
     settings->setValue("Time",		  this->specs->getSchedule()->getTime());
+    settings->sync();
 }

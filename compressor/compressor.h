@@ -13,6 +13,8 @@ public:
     explicit Compressor(QObject *parent = nullptr);
     void compressDir(QString dir, QString archiveFile);
 
+    void setData(QString dir, QString archiveFile);
+
     static qint64 getTotalSize(QString dir);
 
 signals:
@@ -21,7 +23,7 @@ signals:
     void compressProgress(qint64 done, qint64 total);
 
 public slots:
-//    void start();
+    void start();
 //    void stop();
 
 private:

@@ -15,7 +15,7 @@ signals:
     void compressProgress(qint64 done, qint64 total);
 
 public slots:
-    void compressDir(QString inputDir, QString arhciveFile);
+    void compressDir(QString inputDir, QString archiveFile);
 };
 
 #endif // COMPRESSORWRAPPER_H

@@ -32,6 +32,12 @@
       <attribute name="headerCascadingSectionResizes">
        <bool>true</bool>
       </attribute>
+      <attribute name="headerShowSortIndicator" stdset="0">
+       <bool>false</bool>
+      </attribute>
+      <attribute name="headerStretchLastSection">
+       <bool>true</bool>
+      </attribute>
       <column>
        <property name="text">
         <string>Task</string>
@@ -52,20 +58,6 @@
         <string>When</string>
        </property>
       </column>
-      <item>
-       <property name="text">
-        <string>testTask</string>
-       </property>
-       <property name="checkState">
-        <enum>Unchecked</enum>
-       </property>
-       <property name="text">
-        <string>/path/from/</string>
-       </property>
-       <property name="text">
-        <string>/path/to/</string>
-       </property>
-      </item>
      </widget>
     </item>
    </layout>

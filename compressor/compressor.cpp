@@ -39,6 +39,12 @@ void Compressor::compressDir(QString dir, QString archiveFile)
     emit onCompressDirSucces();
 }
 
+void Compressor::setData(QString dir, QString archiveFile)
+{
+    this->folderPath = dir;
+    this->archiveFile = archiveFile;
+}
+
 qint64 Compressor::getTotalSize(QString dir)
 {
     qint64 size = 0;
@@ -52,6 +58,11 @@ qint64 Compressor::getTotalSize(QString dir)
         size += fileInfo.size();
     }
     return size;
+}
+
+void Compressor::start()
+{
+    this->compressDir(folderPath, archiveFile);
 }
 
 void Compressor::compressDir(QuaZip *zip, QString inDir, QString outDir)
