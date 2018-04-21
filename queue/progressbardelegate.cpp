@@ -27,7 +27,8 @@ void ProgressBarDelegate::paint(
         progressBarOption.textVisible = true;
     }
 
-    QStyledItemDelegate::paint(painter, option, QModelIndex());
+    QStyledItemDelegate::paint(painter, option, index);
+
     QApplication::style()->drawControl(QStyle::CE_ProgressBar, &progressBarOption, painter);
 
 }

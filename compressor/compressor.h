@@ -4,7 +4,13 @@
 #include <QObject>
 #include <QDir>
 
-#include <quazip5/quazip.h>
+#ifdef Q_OS_WIN32
+#include <quazip/quazipfile.h>
+#endif
+
+#ifdef Q_OS_LINUX
+#include <quazip5/quazipfile.h>
+#endif
 
 class Compressor : public QObject
 {
