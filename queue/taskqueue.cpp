@@ -2,18 +2,37 @@
 #include "ui_taskqueue.h"
 
 #include <QDebug>
+#include <QSettings>
 
 TaskQueue::TaskQueue(QWidget *parent) :
         QDialog(parent),
         ui(new Ui::TaskQueue),
-        compressor(new CompressorWrapper())
+        compressor(new CompressorWrapper()),
+        yd(new YDAPI(this))
 {
     ui->setupUi(this);
 
     ui->treeWidget->setItemDelegateForColumn(1, new ProgressBarDelegate());
     ui->treeWidget->setItemDelegateForColumn(2, new ProgressBarDelegate());
 
-    connect(compressor, SIGNAL(onCompressDirSucces()), this, SLOT(upload()));
+    connect(compressor, &CompressorWrapper::onCompressDirSucces, this, [=](){
+        completedOperations++;
+        updateTotalProgressBar();
+
+        upload();
+    });
+
+    connect(yd, &YDAPI::uploadFinished, this, [&]{
+        completedOperations++;
+        updateTotalProgressBar();
+
+        currentOperation = nothing;
+        disconnect(yd, &YDAPI::uploadProgress, 0, 0);
+        start();
+    });
+
+    connect(compressor, &CompressorWrapper::onCompressError, this, &TaskQueue::onCompressingError);
+    connect(yd, &YDAPI::onError, this, &TaskQueue::onUploadingError);
 
     this->init();
 }
@@ -64,6 +83,7 @@ void TaskQueue::addTask(BackupTaskSpecs *taskSpecs)
     taskList.append(currentTask);
 
     numberOfOperations += (taskSpecs->getUpload() ? 2 : 1);
+    start();
 }
 
 TaskQueue::~TaskQueue()
@@ -83,13 +103,13 @@ void TaskQueue::start()
 
 void TaskQueue::compress()
 {
-    QString archiveName = genArchiveName(currentTask.first);
+    currentArchiveName = genArchiveName(currentTask.first);
     connect(compressor, &CompressorWrapper::compressProgress, [=](qint64 done, qint64 total){
         currentTask.second->setText(1, QString::number( (qint64)((100*done)/total) ));
     });
 
     currentOperation = compressing;
-    compressor->compressDir(currentTask.first->getPathFrom(), archiveName);
+    compressor->compressDir(currentTask.first->getPathFrom(), currentArchiveName);
 }
 
 void TaskQueue::upload()
@@ -98,25 +118,41 @@ void TaskQueue::upload()
     completedOperations++;
 
     if(currentTask.first->getUpload()) {
+        yd->setToken(QSettings().value("Token").toString());
         currentOperation = uploading;
-        currentTask.second->setText(2, "100");
+
+        connect(yd, &YDAPI::uploadProgress, [=](qint64 done, qint64 total){
+            if(total != 0)
+                currentTask.second->setText(2, QString::number( (qint64)((100*done)/total) ));
+        });
+        yd->uploadToFolder(currentArchiveName, currentTask.first->getName());
+
+    } else {
+        currentOperation = nothing;
+        start();
     }
-    currentOperation = nothing;
-    start();
 }
 
 void TaskQueue::stop()
 {
     switch (currentOperation) {
     case compressing:
+        //compressor->stop();
+        disconnect(compressor, &CompressorWrapper::compressProgress, 0, 0);
 
         break;
     case uploading:
+
+        //yd->stop();
+        disconnect(yd, &YDAPI::uploadProgress, 0, 0);
 
         break;
     default:
         break;
     }
+        taskList.push_front(currentTask);
+        currentTask.first = nullptr;
+        currentTask.second = nullptr;
     currentOperation = nothing;
 }
 
@@ -124,6 +160,24 @@ void TaskQueue::clear()
 {
     this->stop();
     this->init();
+}
+
+void TaskQueue::onCompressingError(QString message)
+{
+    currentTask.second->setText(1, message);
+    completedOperations++;
+    if(currentTask.first->getUpload()) {
+        completedOperations++;
+        currentTask.second->setText(2, "Error");
+    }
+    start();
+}
+
+void TaskQueue::onUploadingError(int code, QString message)
+{
+    currentTask.second->setText(2, QString::number(code) + " " + message);
+    completedOperations++;
+    start();
 }
 
 void TaskQueue::updateTaskProgressBar(qint64 done, qint64 total)
@@ -137,6 +191,11 @@ void TaskQueue::updateTaskProgressBar(qint64 done, qint64 total)
 
     QString progress = QString::number( (qint64)((100*done)/total) );
     currentTask.second->setText(column, progress);
+}
+
+void TaskQueue::updateTotalProgressBar()
+{
+    ui->totalProgressBar->setValue((100 * (completedOperations/numberOfOperations)));
 }
 
 void TaskQueue::on_startButton_clicked()

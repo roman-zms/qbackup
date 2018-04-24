@@ -24,6 +24,8 @@ public:
     QTime getTime() const;
     void setTime(const QTime &value);
 
+    bool containsDay(int day) const;
+
     QList<QVariant> getDays();
     bool getDay(int day) const;
     void setDay(int i, bool value);

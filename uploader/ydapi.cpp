@@ -53,6 +53,15 @@ void YDAPI::upload(QString fileName)
     }
 }
 
+void YDAPI::uploadToFolder(QString fileName, QString folderName)
+{
+    connect(this, &YDAPI::finished, this, [=](){
+        this->disconnect(this, &YDAPI::finished, 0, 0);
+        this->upload(fileName);
+    });
+    createFolder(folderName);
+}
+
 void YDAPI::uploadFilePUT()
 {
     QNetworkReply *reply = m_reply;
@@ -78,7 +87,7 @@ void YDAPI::uploadFilePUT()
     request.setRawHeader(QByteArray("Accept"), 		  QByteArray("application/json"));
     request.setRawHeader(QByteArray("Authorization"), QByteArray(m_token.toUtf8()));
 
-    if(startRequest(request, nPUT, "", file)){
+    if(startRequest(request, nPUT, "", file, true)){
         //connect(m_reply, SIGNAL(uploadProgress(qint64,qint64)),
         //        this, 	 SIGNAL(uploadProgress(qint64,qint64)));
 
@@ -96,7 +105,8 @@ void YDAPI::onUploadFilePUT()
         emit onError(1, jsonObj.value("message").toString());
         return;
     }
-    emit finished(0, "File uploaded");
+    //emit finished(0, "File uploaded");
+    emit uploadFinished();
 }
 
 void YDAPI::onSslErrors(QList<QSslError> errors)
@@ -138,7 +148,7 @@ QNetworkRequest YDAPI::createRequest(QString url)
 
 bool YDAPI::startRequest(const QNetworkRequest &request,
                          YDAPI::RequestMethod method,
-                         const QString &data, QIODevice *io)
+                         const QString &data, QIODevice *io, bool progress)
 {
     QNetworkReply *reply;
 
@@ -179,7 +189,7 @@ bool YDAPI::startRequest(const QNetworkRequest &request,
     connect(m_reply, SIGNAL(sslErrors(QList<QSslError>)),
             this, 	 SLOT(onSslErrors(QList<QSslError>)));
 
-    if(method == nPUT || method == nPOST) {
+    if((method == nPUT || method == nPOST) && progress) {
         connect(m_reply, SIGNAL(uploadProgress(qint64,qint64)),
                 this,	 SIGNAL(uploadProgress(qint64,qint64)));
     }

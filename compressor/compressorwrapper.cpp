@@ -1,6 +1,5 @@
-#include "compressorwrapper.h"
-#include "compressor.h"
 
+#include "compressorwrapper.h"
 #include <QThread>
 
 CompressorWrapper::CompressorWrapper(QObject *parent) : QObject(parent)
@@ -10,10 +9,10 @@ CompressorWrapper::CompressorWrapper(QObject *parent) : QObject(parent)
 
 void CompressorWrapper::compressDir(QString inputDir, QString archiveFile)
 {
-    Compressor *compressor = new Compressor();
+    compressor = new Compressor();
     compressor->setData(inputDir, archiveFile);
 
-    QThread *thread = new QThread();
+    thread = new QThread();
     compressor->moveToThread(thread);
 
     //connect(thread, &QThread::started, this, [=](){
@@ -41,4 +40,11 @@ void CompressorWrapper::compressDir(QString inputDir, QString archiveFile)
     connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
     thread->start();
+}
+
+void CompressorWrapper::stop()
+{
+    compressor->stop();
+    thread->terminate();
+
 }

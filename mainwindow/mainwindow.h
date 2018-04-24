@@ -10,6 +10,7 @@
 #include "backuptask/backuptask.h"
 #include "tasksettings/tasksettings.h"
 #include "queue/taskqueue.h"
+#include "generalsettings/generalsettings.h"
 
 namespace Ui {
 class MainWindow;
@@ -31,17 +32,28 @@ private slots:
     void removeTask();
 
     void openTaskSettings(QTreeWidgetItem*);
+    void openTaskSettings(BackupTask *task);
 
-    void loadTasksWidget();
+    void loadAllTasks();
     void loadTask(QString name);
+
+    void onTaskTimeout();
 
     void on_actionShow_queue_triggered();
 
     void on_actionRunBackup_triggered();
 
+    void on_actionSettings_triggered();
+
+    void on_actionAdd_to_queue_triggered();
+
 private:
     Ui::MainWindow *ui;
     TaskQueue *taskQueue;
+
+    QMap<QString, BackupTask*> tasks;
+
+    GeneralSettings *gSettings;
 };
 
 #endif // MAINWINDOW_H

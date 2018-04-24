@@ -10,7 +10,7 @@
 
 Compressor::Compressor(QObject *parent) : QObject(parent)
 {
-
+    stop = false;
 }
 
 void Compressor::compressDir(QString dir, QString archiveFile)
@@ -75,8 +75,23 @@ void Compressor::start()
     this->compressDir(folderPath, archiveFile);
 }
 
+void Compressor::stop()
+{
+    stop = true;
+    folderPath = "";
+    archiveFile = "";
+
+    totalSize =0;
+    compressedSize =0;
+
+    this->deleteLater();
+}
+
 void Compressor::compressDir(QuaZip *zip, QString inDir, QString outDir)
 {
+    if(stop) {
+        return;
+    }
     if(!zip){
         emit onCompressError("API error");
         return;
@@ -140,6 +155,9 @@ void Compressor::compressDir(QuaZip *zip, QString inDir, QString outDir)
 bool Compressor::copyData(QIODevice &inFile, QIODevice &outFile)
 {
     while (!inFile.atEnd()){
+        if(stop) {
+            return false;
+        }
         char buff[4096];
         qint64 readLen = inFile.read(buff, 4096);
         if(readLen <= 0){
@@ -157,6 +175,7 @@ bool Compressor::copyData(QIODevice &inFile, QIODevice &outFile)
 
 void Compressor::compressFile(QuaZip *zip, QString fileToCompress, QString relativeFileName)
 {
+    if(stop) return;
     if(!zip){
         emit onCompressError("API error");
         return;

@@ -1,12 +1,13 @@
 #include "backuptask.h"
 
-BackupTask::BackupTask(QString name, QObject *parent) : QObject(parent)
+BackupTask::BackupTask(QString name, QObject *parent) : QObject(parent),
+    settings(new QSettings(this)),
+    specs(new BackupTaskSpecs(name)),
+    timer(new QTimer(this))
 {
-    settings = new QSettings(this);
     settings->beginGroup("Tasks");
     settings->beginGroup(name);
 
-    specs = new BackupTaskSpecs(name);
     initTask();
 }
 
@@ -39,6 +40,8 @@ void BackupTask::initTask()
     }
 
     this->specs->getSchedule()->setTime(settings->value("Time").toTime());
+
+    initTimer();
 }
 
 void BackupTask::saveTask()
@@ -50,4 +53,29 @@ void BackupTask::saveTask()
     settings->setValue("Days",		  this->specs->getSchedule()->getDays());
     settings->setValue("Time",		  this->specs->getSchedule()->getTime());
     settings->sync();
+    initTask();
+}
+
+QDateTime BackupTask::getNearestDateTime()
+{
+    for(int i=0; i<8; i++) {
+        QDateTime taskDateTime(QDate::currentDate().addDays(i), specs->getSchedule()->getTime());
+        if(specs->getSchedule()->containsDay(taskDateTime.date().dayOfWeek()) &&
+                        QDateTime::currentDateTime() < taskDateTime){
+            return taskDateTime;
+        }
+    }
+    return QDateTime();
+}
+
+void BackupTask::initTimer()
+{
+    if(timer != nullptr) timer->deleteLater();
+    if(!specs->getAutoBackup()) {
+        return;
+    }
+    timer = new QTimer(this);
+    timer->start(QDateTime::currentDateTime().msecsTo(getNearestDateTime()));
+    connect(timer, &QTimer::timeout, this, &BackupTask::timeout);
+    connect(timer, &QTimer::timeout, this, &BackupTask::initTimer);
 }

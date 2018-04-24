@@ -3,6 +3,8 @@
 
 #include <QObject>
 
+#include "compressor.h"
+
 class CompressorWrapper : public QObject
 {
     Q_OBJECT
@@ -16,6 +18,11 @@ signals:
 
 public slots:
     void compressDir(QString inputDir, QString archiveFile);
+    void stop();
+
+private:
+    Compressor *compressor;
+    QThread *thread;
 };
 
 #endif // COMPRESSORWRAPPER_H
