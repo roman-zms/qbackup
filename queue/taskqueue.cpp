@@ -7,7 +7,7 @@
 TaskQueue::TaskQueue(QWidget *parent) :
         QDialog(parent),
         ui(new Ui::TaskQueue),
-        compressor(new CompressorWrapper()),
+        compressor(new CompressorWrapper(this)),
         yd(new YDAPI(this))
 {
     ui->setupUi(this);
@@ -15,14 +15,14 @@ TaskQueue::TaskQueue(QWidget *parent) :
     ui->treeWidget->setItemDelegateForColumn(1, new ProgressBarDelegate());
     ui->treeWidget->setItemDelegateForColumn(2, new ProgressBarDelegate());
 
-    connect(compressor, &CompressorWrapper::onCompressDirSucces, this, [=](){
+    connect(compressor, &CompressorWrapper::onCompressDirSucces, this, [&](){
         completedOperations++;
         updateTotalProgressBar();
 
         upload();
     });
 
-    connect(yd, &YDAPI::uploadFinished, this, [&]{
+    connect(yd, &YDAPI::uploadFinished, this, [&](){
         completedOperations++;
         updateTotalProgressBar();
 
@@ -77,10 +77,11 @@ void TaskQueue::addTask(BackupTaskSpecs *taskSpecs)
     itemText << taskSpecs->getName() << "0";
     itemText << (taskSpecs->getUpload() ? "0" : "--");
 
-    currentTask.first  = taskSpecs;
-    currentTask.second = new QTreeWidgetItem(ui->treeWidget, itemText);
+    QPair<BackupTaskSpecs*, QTreeWidgetItem*> newTask;
+    newTask.first  = taskSpecs;
+    newTask.second = new QTreeWidgetItem(ui->treeWidget, itemText);
 
-    taskList.append(currentTask);
+    taskList.append(newTask);
 
     numberOfOperations += (taskSpecs->getUpload() ? 2 : 1);
     start();
@@ -98,6 +99,9 @@ void TaskQueue::start()
     if(!taskList.empty()) {
         currentTask = taskList.takeFirst();
         compress();
+    } else {
+        currentTask.first = nullptr;
+        currentTask.second = nullptr;
     }
 }
 
@@ -115,7 +119,6 @@ void TaskQueue::compress()
 void TaskQueue::upload()
 {
     QObject::disconnect(compressor, &CompressorWrapper::compressProgress, 0, 0);
-    completedOperations++;
 
     if(currentTask.first->getUpload()) {
         yd->setToken(QSettings().value("Token").toString());
@@ -137,22 +140,28 @@ void TaskQueue::stop()
 {
     switch (currentOperation) {
     case compressing:
-        //compressor->stop();
         disconnect(compressor, &CompressorWrapper::compressProgress, 0, 0);
+        completedOperations--;
+        updateTotalProgressBar();
+
+        compressor->stop();
+        currentTask.second->setText(1, "0");
 
         break;
     case uploading:
-
-        //yd->stop();
         disconnect(yd, &YDAPI::uploadProgress, 0, 0);
+        completedOperations -= 2;
+        updateTotalProgressBar();
+
+        yd->stop();
+        currentTask.second->setText(1, "0");
+        currentTask.second->setText(2, "0");
 
         break;
     default:
         break;
     }
-        taskList.push_front(currentTask);
-        currentTask.first = nullptr;
-        currentTask.second = nullptr;
+    taskList.push_front(currentTask);
     currentOperation = nothing;
 }
 
@@ -170,11 +179,14 @@ void TaskQueue::onCompressingError(QString message)
         completedOperations++;
         currentTask.second->setText(2, "Error");
     }
+    currentTask.first = nullptr;
+    currentTask.second = nullptr;
     start();
 }
 
 void TaskQueue::onUploadingError(int code, QString message)
 {
+    if(code == 206) return;
     currentTask.second->setText(2, QString::number(code) + " " + message);
     completedOperations++;
     start();
@@ -201,4 +213,14 @@ void TaskQueue::updateTotalProgressBar()
 void TaskQueue::on_startButton_clicked()
 {
     this->start();
+}
+
+void TaskQueue::on_stopButton_clicked()
+{
+    this->stop();
+}
+
+void TaskQueue::on_clearButton_clicked()
+{
+    this->clear();
 }

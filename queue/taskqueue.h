@@ -42,6 +42,10 @@ private slots:
 
     void on_startButton_clicked();
 
+    void on_stopButton_clicked();
+
+    void on_clearButton_clicked();
+
 private:
     void init();
     QString genArchiveName(BackupTaskSpecs *task);
@@ -58,8 +62,8 @@ private:
     QPair<BackupTaskSpecs*, QTreeWidgetItem*> currentTask;
 
     int currentIndex;
-    int completedOperations;
-    int numberOfOperations;
+    double completedOperations;
+    double numberOfOperations;
 
     QString currentArchiveName;
 

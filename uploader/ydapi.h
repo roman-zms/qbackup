@@ -24,6 +24,7 @@ public slots:
 
     void uploadToFolder(QString fileName, QString folderName);
 
+    void stop();
 signals:
     void finished(int code, QString info);	//new
     void onError(int code, QString errorMessage);			//new

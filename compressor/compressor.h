@@ -43,7 +43,8 @@ private:
     void compressFile(QuaZip *zip, QString fileToCompress, QString relativeFileName);
     bool copyData(QIODevice &inFile, QIODevice &outFile);
 
-    bool stop;
+    QuaZip *zip;
+    bool _stop;
 };
 
 #endif // COMPRESSOR_H

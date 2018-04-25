@@ -15,9 +15,6 @@ void CompressorWrapper::compressDir(QString inputDir, QString archiveFile)
     thread = new QThread();
     compressor->moveToThread(thread);
 
-    //connect(thread, &QThread::started, this, [=](){
-    //    compressor->compressDir(inputDir, archiveFile);
-    //});
     connect(thread, &QThread::started, compressor, &Compressor::start);
 
     connect(compressor, &Compressor::compressProgress, this, &CompressorWrapper::compressProgress);
@@ -45,6 +42,10 @@ void CompressorWrapper::compressDir(QString inputDir, QString archiveFile)
 void CompressorWrapper::stop()
 {
     compressor->stop();
-    thread->terminate();
+    compressor->deleteLater();
+    disconnect(compressor, 0, 0, 0);
 
+    thread->terminate();
+    thread->wait();
+    thread->deleteLater();
 }

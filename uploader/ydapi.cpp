@@ -10,10 +10,7 @@
 
 #define NAMOR_API_CONNECT_REPLY_FINISHED(x)    connect(m_reply, SIGNAL(finished()), SLOT(x()))
 
-YDAPI::YDAPI(QObject *parent) : QObject(parent)
-{
-    m_manager = new QNetworkAccessManager(this);
-}
+YDAPI::YDAPI(QObject *parent) : QObject(parent), m_manager(new QNetworkAccessManager(this)) {}
 
 void YDAPI::setToken(QString token)
 {
@@ -55,11 +52,24 @@ void YDAPI::upload(QString fileName)
 
 void YDAPI::uploadToFolder(QString fileName, QString folderName)
 {
+    if(m_token.isEmpty()) {
+        emit onError(1, "Empty token");
+        return;
+    }
     connect(this, &YDAPI::finished, this, [=](){
         this->disconnect(this, &YDAPI::finished, 0, 0);
         this->upload(fileName);
     });
     createFolder(folderName);
+}
+
+void YDAPI::stop()
+{
+    if(m_reply != nullptr){
+        disconnect(m_reply, 0,0,0);
+        m_reply->abort();
+        m_reply->deleteLater();
+    }
 }
 
 void YDAPI::uploadFilePUT()
