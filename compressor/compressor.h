@@ -30,7 +30,7 @@ signals:
 
 public slots:
     void start();
-//    void stop();
+    void stop();
 
 private:
     QString folderPath;
@@ -42,6 +42,9 @@ private:
     void compressDir(QuaZip *zip, QString inDir, QString outDir);
     void compressFile(QuaZip *zip, QString fileToCompress, QString relativeFileName);
     bool copyData(QIODevice &inFile, QIODevice &outFile);
+
+    QuaZip *zip;
+    bool _stop;
 };
 
 #endif // COMPRESSOR_H

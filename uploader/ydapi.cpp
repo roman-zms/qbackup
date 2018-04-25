@@ -10,10 +10,7 @@
 
 #define NAMOR_API_CONNECT_REPLY_FINISHED(x)    connect(m_reply, SIGNAL(finished()), SLOT(x()))
 
-YDAPI::YDAPI(QObject *parent) : QObject(parent)
-{
-    m_manager = new QNetworkAccessManager(this);
-}
+YDAPI::YDAPI(QObject *parent) : QObject(parent), m_manager(new QNetworkAccessManager(this)) {}
 
 void YDAPI::setToken(QString token)
 {
@@ -53,6 +50,28 @@ void YDAPI::upload(QString fileName)
     }
 }
 
+void YDAPI::uploadToFolder(QString fileName, QString folderName)
+{
+    if(m_token.isEmpty()) {
+        emit onError(1, "Empty token");
+        return;
+    }
+    connect(this, &YDAPI::finished, this, [=](){
+        this->disconnect(this, &YDAPI::finished, 0, 0);
+        this->upload(fileName);
+    });
+    createFolder(folderName);
+}
+
+void YDAPI::stop()
+{
+    if(m_reply != nullptr){
+        disconnect(m_reply, 0,0,0);
+        m_reply->abort();
+        m_reply->deleteLater();
+    }
+}
+
 void YDAPI::uploadFilePUT()
 {
     QNetworkReply *reply = m_reply;
@@ -78,7 +97,7 @@ void YDAPI::uploadFilePUT()
     request.setRawHeader(QByteArray("Accept"), 		  QByteArray("application/json"));
     request.setRawHeader(QByteArray("Authorization"), QByteArray(m_token.toUtf8()));
 
-    if(startRequest(request, nPUT, "", file)){
+    if(startRequest(request, nPUT, "", file, true)){
         //connect(m_reply, SIGNAL(uploadProgress(qint64,qint64)),
         //        this, 	 SIGNAL(uploadProgress(qint64,qint64)));
 
@@ -96,7 +115,8 @@ void YDAPI::onUploadFilePUT()
         emit onError(1, jsonObj.value("message").toString());
         return;
     }
-    emit finished(0, "File uploaded");
+    //emit finished(0, "File uploaded");
+    emit uploadFinished();
 }
 
 void YDAPI::onSslErrors(QList<QSslError> errors)
@@ -138,7 +158,7 @@ QNetworkRequest YDAPI::createRequest(QString url)
 
 bool YDAPI::startRequest(const QNetworkRequest &request,
                          YDAPI::RequestMethod method,
-                         const QString &data, QIODevice *io)
+                         const QString &data, QIODevice *io, bool progress)
 {
     QNetworkReply *reply;
 
@@ -179,7 +199,7 @@ bool YDAPI::startRequest(const QNetworkRequest &request,
     connect(m_reply, SIGNAL(sslErrors(QList<QSslError>)),
             this, 	 SLOT(onSslErrors(QList<QSslError>)));
 
-    if(method == nPUT || method == nPOST) {
+    if((method == nPUT || method == nPOST) && progress) {
         connect(m_reply, SIGNAL(uploadProgress(qint64,qint64)),
                 this,	 SIGNAL(uploadProgress(qint64,qint64)));
     }

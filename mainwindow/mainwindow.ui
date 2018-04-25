@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>466</width>
-    <height>291</height>
+    <width>552</width>
+    <height>320</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -67,7 +67,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>466</width>
+     <width>552</width>
      <height>23</height>
     </rect>
    </property>
@@ -95,8 +95,11 @@
    <addaction name="actionRemoveTask"/>
    <addaction name="separator"/>
    <addaction name="actionRunBackup"/>
+   <addaction name="actionAdd_to_queue"/>
    <addaction name="separator"/>
    <addaction name="actionShow_queue"/>
+   <addaction name="separator"/>
+   <addaction name="actionSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionRunBackup">
@@ -116,7 +119,17 @@
   </action>
   <action name="actionShow_queue">
    <property name="text">
-    <string>Show Queue</string>
+    <string>Show queue</string>
+   </property>
+  </action>
+  <action name="actionSettings">
+   <property name="text">
+    <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionAdd_to_queue">
+   <property name="text">
+    <string>Add to queue</string>
    </property>
   </action>
  </widget>

@@ -1,16 +1,8 @@
 #include "compressor.h"
 
-#ifdef Q_OS_WIN32
-#include <quazip/quazipfile.h>
-#endif
-
-#ifdef Q_OS_LINUX
-#include <quazip5/quazipfile.h>
-#endif
-
 Compressor::Compressor(QObject *parent) : QObject(parent)
 {
-
+    _stop = false;
 }
 
 void Compressor::compressDir(QString dir, QString archiveFile)
@@ -40,6 +32,10 @@ void Compressor::compressDir(QString dir, QString archiveFile)
     this->compressDir(&zip, dir, dir);
 
     zip.close();
+    if(_stop){
+        QFile::remove(archiveFile);
+        return;
+    }
     if(zip.getZipError()!=0){
         QFile::remove(archiveFile);
         emit onCompressError("Zip file error");
@@ -75,8 +71,21 @@ void Compressor::start()
     this->compressDir(folderPath, archiveFile);
 }
 
+void Compressor::stop()
+{
+    _stop = true;
+    folderPath = "";
+    archiveFile = "";
+
+    totalSize =0;
+    compressedSize =0;
+}
+
 void Compressor::compressDir(QuaZip *zip, QString inDir, QString outDir)
 {
+    if(_stop) {
+        return;
+    }
     if(!zip){
         emit onCompressError("API error");
         return;
@@ -109,17 +118,6 @@ void Compressor::compressDir(QuaZip *zip, QString inDir, QString outDir)
             return;
         }
         dirZipFile.close();
-    } else {
-        //QuaZipFile dirZipFile(zip);
-
-        //if(!dirZipFile.open(
-        //       QIODevice::WriteOnly,
-        //       QuaZipNewInfo(relativePrefix + zipDirectory.dirName(), inDir), 0, 0, 0))
-        //{
-        //    emit onCompressError("Write error");
-        //    return;
-        //}
-        //dirZipFile.close();
     }
 
     QFileInfoList subDirs = directory.entryInfoList(QDir::AllDirs | QDir::NoDotAndDotDot);
@@ -129,7 +127,6 @@ void Compressor::compressDir(QuaZip *zip, QString inDir, QString outDir)
 
     QFileInfoList files = directory.entryInfoList(QDir::Files);
     foreach(QFileInfo file, files){
-        //if(file.isFile() == false || file.absoluteFilePath() == zip->getZipName()) continue;
         if(file.isFile() || file.absoluteFilePath() != zip->getZipName()) {
             QString fileName = zipDirectory.relativeFilePath(file.absoluteFilePath());
             compressFile(zip, file.absoluteFilePath(), relativePrefix + fileName);
@@ -140,6 +137,9 @@ void Compressor::compressDir(QuaZip *zip, QString inDir, QString outDir)
 bool Compressor::copyData(QIODevice &inFile, QIODevice &outFile)
 {
     while (!inFile.atEnd()){
+        if(_stop) {
+            return false;
+        }
         char buff[4096];
         qint64 readLen = inFile.read(buff, 4096);
         if(readLen <= 0){
@@ -157,6 +157,7 @@ bool Compressor::copyData(QIODevice &inFile, QIODevice &outFile)
 
 void Compressor::compressFile(QuaZip *zip, QString fileToCompress, QString relativeFileName)
 {
+    if(_stop) return;
     if(!zip){
         emit onCompressError("API error");
         return;
@@ -183,7 +184,7 @@ void Compressor::compressFile(QuaZip *zip, QString fileToCompress, QString relat
 
     //zipping
     if(!copyData(inFile, outFile) || outFile.getZipError()!=UNZ_OK){
-        emit onCompressError("Compress error");
+        if(!_stop) emit onCompressError("Compress error");
         return;
     }
 

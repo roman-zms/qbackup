@@ -9,6 +9,7 @@
 #include "progressbardelegate.h"
 #include "backuptask/backuptaskspecs.h"
 #include "compressor/compressorwrapper.h"
+#include "uploader/ydapi.h"
 
 namespace Ui {
 class TaskQueue;
@@ -23,17 +24,27 @@ public:
     void addTask(BackupTaskSpecs *taskSpecs);
     ~TaskQueue();
 
-private slots:
+public slots:
     void start();
+
+private slots:
     void compress();
     void upload();
 
     void stop();
     void clear();
 
+    void onCompressingError(QString message);
+    void onUploadingError(int code, QString message);
+
     void updateTaskProgressBar(qint64 done, qint64 total);
+    void updateTotalProgressBar();
 
     void on_startButton_clicked();
+
+    void on_stopButton_clicked();
+
+    void on_clearButton_clicked();
 
 private:
     void init();
@@ -51,12 +62,16 @@ private:
     QPair<BackupTaskSpecs*, QTreeWidgetItem*> currentTask;
 
     int currentIndex;
-    int completedOperations;
-    int numberOfOperations;
+    double completedOperations;
+    double numberOfOperations;
+
+    QString currentArchiveName;
 
     OperationType currentOperation;
 
     CompressorWrapper *compressor;
+    YDAPI *yd;
+
 };
 
 #endif // TASKQUEUE_H

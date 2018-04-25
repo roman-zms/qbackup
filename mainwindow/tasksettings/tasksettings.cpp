@@ -4,10 +4,10 @@
 
 #include <QDebug>
 
-TaskSettings::TaskSettings(QString name, QWidget *parent) :
+TaskSettings::TaskSettings(BackupTask *task, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::TaskSettings),
-    task(new BackupTask(name, this))
+    task(task)
 {
     ui->setupUi(this);
 
@@ -50,6 +50,7 @@ void TaskSettings::init()
         _days.replace(i, state);
         //ui->treeWidget->itemAt(i, 0)->setCheckState(0, state);
     }
+    ui->timeEdit->setTime(task->specs->getSchedule()->getTime());
 }
 
 void TaskSettings::save()
@@ -66,6 +67,8 @@ void TaskSettings::save()
     for(int i=0; i<7; i++) {
         task->specs->getSchedule()->setDay(i, _days.at(i));
     }
+
+    task->specs->getSchedule()->setTime(ui->timeEdit->time());
     task->sync();
 }
 

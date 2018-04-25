@@ -42,12 +42,14 @@ SOURCES += \
     queue/progressbardelegate.cpp \
     compressor/compressor.cpp \
     compressor/compressorwrapper.cpp \
-    uploader/ydapi.cpp
+    uploader/ydapi.cpp \
+    generalsettings/generalsettings.cpp
 
 FORMS += \
     mainwindow/mainwindow.ui \
     mainwindow/tasksettings/tasksettings.ui \
-    queue/taskqueue.ui
+    queue/taskqueue.ui \
+    generalsettings/generalsettings.ui
 
 HEADERS += \
     mainwindow/mainwindow.h \
@@ -59,4 +61,5 @@ HEADERS += \
     queue/progressbardelegate.h \
     compressor/compressor.h \
     compressor/compressorwrapper.h \
-    uploader/ydapi.h
+    uploader/ydapi.h \
+    generalsettings/generalsettings.h

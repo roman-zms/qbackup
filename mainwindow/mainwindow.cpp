@@ -7,7 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    loadTasksWidget();
+    loadAllTasks();
 
     taskQueue = new TaskQueue(this);
     taskQueue->hide();
@@ -28,12 +28,28 @@ void MainWindow::on_actionAddTask_triggered()
 
 void MainWindow::loadTask(QString name)
 {
+    if(!tasks.contains(name)){
+        BackupTask *task = new BackupTask(name);
+        tasks.insert(name, task);
+    }
+
+    BackupTask *task = tasks.value(name);
+    if(task->specs->getAutoBackup())
+        connect(task, &BackupTask::timeout, this, &MainWindow::onTaskTimeout, Qt::UniqueConnection);
+    else
+        disconnect(task, &BackupTask::timeout, this, &MainWindow::onTaskTimeout);
+
     QStringList taskSettings;
-    BackupTask *task = new BackupTask(name);
     taskSettings << task->specs->getName() << task->specs->getPathFrom() << task->specs->getPathTo();
 
     QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget, taskSettings);
     ui->treeWidget->addTopLevelItem(item);
+}
+
+void MainWindow::onTaskTimeout()
+{
+    BackupTask *task = qobject_cast<BackupTask*>(sender());
+    taskQueue->addTask(task->specs);
 }
 
 void MainWindow::addNewTask()
@@ -58,7 +74,7 @@ void MainWindow::addNewTask()
     //item->setCheckState(0, Qt::CheckState::Unchecked);
     ui->treeWidget->addTopLevelItem(item);
 
-    BackupTask task(name);
+    openTaskSettings(new BackupTask(name));
 }
 
 void MainWindow::removeTask()
@@ -69,26 +85,33 @@ void MainWindow::removeTask()
     settings->beginGroup("Tasks");
 
     foreach(QTreeWidgetItem *item, items){
+        tasks.take(item->text(0))->deleteLater();
         settings->remove(item->text(0));
     }
 
     settings->deleteLater();
 
-    loadTasksWidget();
+    loadAllTasks();
 }
 
 void MainWindow::openTaskSettings(QTreeWidgetItem *item)
 {
     QString name = item->text(0);
-    TaskSettings *taskSettings = new TaskSettings(name);
+
+    openTaskSettings(tasks.value(name));
+}
+
+void MainWindow::openTaskSettings(BackupTask *task)
+{
+    TaskSettings *taskSettings = new TaskSettings(task);
 
     connect(taskSettings, SIGNAL(finished(int)), taskSettings, SLOT(deleteLater()));
-    connect(taskSettings, SIGNAL(accepted()), this, SLOT(loadTasksWidget()));
+    connect(taskSettings, SIGNAL(accepted()), this, SLOT(loadAllTasks()));
     taskSettings->show();
 
 }
 
-void MainWindow::loadTasksWidget()
+void MainWindow::loadAllTasks()
 {
     ui->treeWidget->clear();
 
@@ -115,9 +138,21 @@ void MainWindow::on_actionShow_queue_triggered()
 
 void MainWindow::on_actionRunBackup_triggered()
 {
+    on_actionAdd_to_queue_triggered();
+    taskQueue->start();
+}
+
+void MainWindow::on_actionSettings_triggered()
+{
+    gSettings = new GeneralSettings(this);
+    gSettings->show();
+    connect(gSettings, &GeneralSettings::finished, gSettings, &GeneralSettings::deleteLater);
+}
+
+void MainWindow::on_actionAdd_to_queue_triggered()
+{
     if(ui->treeWidget->selectedItems().empty()) return;
     foreach (QTreeWidgetItem *item, ui->treeWidget->selectedItems()) {
-        BackupTask *task = new BackupTask(item->text(0));
-        this->taskQueue->addTask(task->specs);
+        this->taskQueue->addTask(tasks.value(item->text(0))->specs);
     }
 }

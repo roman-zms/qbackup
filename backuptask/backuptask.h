@@ -3,6 +3,8 @@
 
 #include <QObject>
 #include <QSettings>
+#include <QTimer>
+#include <QDateTime>
 
 #include "backuptaskspecs.h"
 
@@ -18,11 +20,20 @@ public:
 public slots:
     void sync();
 
+private slots:
+    void initTimer();
+
+signals:
+    void timeout();
+
 private:
     void initTask();
     void saveTask();
+    QDateTime getNearestDateTime();
 
+    //QDateTime nearestDateTime;
     QSettings *settings;
+    QTimer *timer;
 };
 
 #endif // BACKUPTASK_H
