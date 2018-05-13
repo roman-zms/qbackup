@@ -43,3 +43,24 @@ void GeneralSettings::load()
     ui->autoStartCheckBox->setChecked(settings.value("AutoStart").toBool());
     ui->tokenLineEdit->setText(settings.value("Token").toString());
 }
+
+void GeneralSettings::on_autoStartCheckBox_toggled(bool checked)
+{
+    QSettings settings;
+    settings.setValue("AutoStart", checked);
+#ifdef Q_OS_WIN32
+    if(checked){
+        QSettings setting("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                          QSettings::NativeFormat);
+        setting.setValue(APPLICATION_NAME,
+                         QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + " MINIMIZE");
+        setting.sync();
+    } else {
+        QSettings setting("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
+                          QSettings::NativeFormat);
+        setting.remove(APPLICATION_NAME);
+        setting.sync();
+    }
+#endif
+
+}

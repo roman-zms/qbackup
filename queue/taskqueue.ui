@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>TaskQueue</class>
- <widget class="QDialog" name="TaskQueue">
+ <widget class="QWidget" name="TaskQueue">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>339</width>
+    <width>391</width>
     <height>381</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Task queue</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTreeWidget" name="treeWidget">
+     <property name="autoFillBackground">
+      <bool>true</bool>
+     </property>
      <property name="rootIsDecorated">
+      <bool>false</bool>
+     </property>
+     <property name="animated">
       <bool>false</bool>
      </property>
      <property name="headerHidden">
       <bool>false</bool>
      </property>
+     <attribute name="headerCascadingSectionResizes">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="headerShowSortIndicator" stdset="0">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="headerStretchLastSection">
+      <bool>true</bool>
+     </attribute>
      <column>
       <property name="text">
        <string>Task</string>

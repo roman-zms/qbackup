@@ -20,6 +20,8 @@ private slots:
 
     void on_buttonBox_accepted();
 
+    void on_autoStartCheckBox_toggled(bool checked);
+
 private:
     Ui::GeneralSettings *ui;
 
