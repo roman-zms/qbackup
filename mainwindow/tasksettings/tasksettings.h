@@ -19,6 +19,9 @@ public:
     explicit TaskSettings(BackupTask *task, QWidget *parent = 0);
     ~TaskSettings();
 
+public slots:
+    void accept();
+
 private slots:
     void init();
     void save();
@@ -27,7 +30,6 @@ private slots:
 
     void on_toPushButton_clicked();
 
-    void treeWidgetItemChanged(QTreeWidgetItem*, int);
     void treeWidgetItemClicked(QModelIndex index);
 
     void on_buttonBox_accepted();

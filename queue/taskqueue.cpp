@@ -5,7 +5,7 @@
 #include <QSettings>
 
 TaskQueue::TaskQueue(QWidget *parent) :
-        QDialog(parent),
+        QWidget(parent),
         ui(new Ui::TaskQueue),
         compressor(new CompressorWrapper(this)),
         yd(new YDAPI(this))
@@ -75,7 +75,11 @@ void TaskQueue::addTask(BackupTaskSpecs *taskSpecs)
 {
     QStringList itemText;
     itemText << taskSpecs->getName() << "0";
-    itemText << (taskSpecs->getUpload() ? "0" : "--");
+    QString token = QSettings().value("Token").toString();
+    if(token != "" && taskSpecs->getUpload())
+        itemText << "0";
+    else
+        itemText << "--";
 
     QPair<BackupTaskSpecs*, QTreeWidgetItem*> newTask;
     newTask.first  = taskSpecs;
@@ -83,8 +87,8 @@ void TaskQueue::addTask(BackupTaskSpecs *taskSpecs)
 
     taskList.append(newTask);
 
-    numberOfOperations += (taskSpecs->getUpload() ? 2 : 1);
-    start();
+    numberOfOperations += ((taskSpecs->getUpload() && token!="") ? 2 : 1);
+    //start();
 }
 
 TaskQueue::~TaskQueue()
@@ -120,7 +124,7 @@ void TaskQueue::upload()
 {
     QObject::disconnect(compressor, &CompressorWrapper::compressProgress, 0, 0);
 
-    if(currentTask.first->getUpload()) {
+    if(currentTask.first->getUpload() && QSettings().value("Token").toString() != "") {
         yd->setToken(QSettings().value("Token").toString());
         currentOperation = uploading;
 

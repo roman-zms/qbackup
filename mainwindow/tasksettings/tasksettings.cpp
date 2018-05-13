@@ -15,12 +15,19 @@ TaskSettings::TaskSettings(BackupTask *task, QWidget *parent) :
     connect(ui->autoBackupCheckBox, SIGNAL(toggled(bool)), ui->timeEdit, SLOT(setEnabled(bool)));
 
     connect(ui->treeWidget, SIGNAL(clicked(QModelIndex)), this, SLOT(treeWidgetItemClicked(QModelIndex)));
-    connect(ui->treeWidget, SIGNAL(itemChanged(QTreeWidgetItem*,int)),
-            this, 			SLOT(treeWidgetItemChanged(QTreeWidgetItem*,int)));
+
+    connect(this, &TaskSettings::finished, this, &TaskSettings::deleteLater);
 
     //task = new BackupTask(name, this);
     this->setWindowTitle(task->specs->getName());
     init();
+}
+
+void TaskSettings::accept()
+{
+    save();
+    this->close();
+    emit accepted();
 }
 
 TaskSettings::~TaskSettings()
@@ -84,18 +91,6 @@ void TaskSettings::on_toPushButton_clicked()
     ui->lineEditTo->setText(dir);
 }
 
-void TaskSettings::treeWidgetItemChanged(QTreeWidgetItem *item, int)
-{
-    //int row = ui->treeWidget->indexOfTopLevelItem(item);
-
-    //////TaskSchedule *schedule = task->specs->getSchedule();
-    //////schedule->setDay(row, item->checkState(0));
-
-    //_days.replace(row, item->checkState(0));
-
-    //qDebug() << row << " " << item->text(0) <<" "<<item->checkState(0);
-}
-
 void TaskSettings::treeWidgetItemClicked(QModelIndex index)
 {
     int row = index.row();
@@ -106,7 +101,7 @@ void TaskSettings::treeWidgetItemClicked(QModelIndex index)
 
 void TaskSettings::on_buttonBox_accepted()
 {
-    save();
-    this->accept();
-    this->deleteLater();
+    //save();
+    //this->accept();
+    //this->deleteLater();
 }

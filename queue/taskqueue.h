@@ -1,7 +1,7 @@
 #ifndef TASKQUEUE_H
 #define TASKQUEUE_H
 
-#include <QDialog>
+#include <QWidget>
 #include <QPair>
 #include <QTreeWidgetItem>
 #include <QDir>
@@ -15,7 +15,7 @@ namespace Ui {
 class TaskQueue;
 }
 
-class TaskQueue : public QDialog
+class TaskQueue : public QWidget
 {
     Q_OBJECT
 

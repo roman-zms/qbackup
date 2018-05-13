@@ -4,21 +4,23 @@
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    taskQueue(new TaskQueue())
 {
     ui->setupUi(this);
     loadAllTasks();
 
-    taskQueue = new TaskQueue(this);
     taskQueue->hide();
 
     connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this, 			SLOT(openTaskSettings(QTreeWidgetItem*)));
+
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete taskQueue;
 }
 
 void MainWindow::on_actionAddTask_triggered()
@@ -41,6 +43,8 @@ void MainWindow::loadTask(QString name)
 
     QStringList taskSettings;
     taskSettings << task->specs->getName() << task->specs->getPathFrom() << task->specs->getPathTo();
+    if(task->specs->getAutoBackup())
+        taskSettings << getScheduleString(*(task->specs->getSchedule()));
 
     QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget, taskSettings);
     ui->treeWidget->addTopLevelItem(item);
@@ -50,6 +54,20 @@ void MainWindow::onTaskTimeout()
 {
     BackupTask *task = qobject_cast<BackupTask*>(sender());
     taskQueue->addTask(task->specs);
+}
+
+void MainWindow::addToQueue()
+{
+    if(ui->treeWidget->selectedItems().empty()) return;
+    foreach (QTreeWidgetItem *item, ui->treeWidget->selectedItems()) {
+        auto *spec = tasks.value(item->text(0))->specs;
+        if(QDir(spec->getPathFrom()).exists() &&
+                        QDir(spec->getPathTo()).exists()) {
+            this->taskQueue->addTask(tasks.value(item->text(0))->specs);
+        } else {
+            QMessageBox::critical(this, "Error", "Invalid task");
+        }
+    }
 }
 
 void MainWindow::addNewTask()
@@ -82,7 +100,7 @@ void MainWindow::removeTask()
     QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 
     QSettings *settings = new QSettings(this);
-    settings->beginGroup("Tasks");
+    //settings->beginGroup("Tasks");
 
     foreach(QTreeWidgetItem *item, items){
         tasks.take(item->text(0))->deleteLater();
@@ -116,9 +134,10 @@ void MainWindow::loadAllTasks()
     ui->treeWidget->clear();
 
     QSettings *settings = new QSettings(this);
-    settings->beginGroup("Tasks");
+    //settings->beginGroup("Tasks");
 
     QStringList taskNames = settings->childGroups();
+    taskNames.removeOne("General");
     settings->deleteLater();
 
     foreach(QString taskName, taskNames) {
@@ -151,8 +170,29 @@ void MainWindow::on_actionSettings_triggered()
 
 void MainWindow::on_actionAdd_to_queue_triggered()
 {
-    if(ui->treeWidget->selectedItems().empty()) return;
-    foreach (QTreeWidgetItem *item, ui->treeWidget->selectedItems()) {
-        this->taskQueue->addTask(tasks.value(item->text(0))->specs);
+    addToQueue();
+}
+
+QString MainWindow::getScheduleString(const TaskSchedule &schedule)
+{
+    if(schedule.getTime().isNull()) return "";
+    QStringList daysOfWeek{
+        tr("Mo"),
+        tr("Tu"),
+        tr("We"),
+        tr("Th"),
+        tr("Fr"),
+        tr("Sa"),
+        tr("Su")
+    };
+    QString string;
+    QTextStream str(&string);
+    str << schedule.getTime().toString("hh:mm") << " ";
+    for(int i=0; i<7; i++) {
+        if(schedule.containsDay(i+1)) {
+            str << daysOfWeek.at(i) <<" ";
+        }
     }
+    return string;
+
 }

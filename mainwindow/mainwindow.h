@@ -6,11 +6,13 @@
 #include <QTreeWidgetItem>
 #include <QInputDialog>
 #include <QSettings>
+#include <QMessageBox>
 
 #include "backuptask/backuptask.h"
 #include "tasksettings/tasksettings.h"
 #include "queue/taskqueue.h"
 #include "generalsettings/generalsettings.h"
+#include "backuptask/taskschedule.h"
 
 namespace Ui {
 class MainWindow;
@@ -39,6 +41,8 @@ private slots:
 
     void onTaskTimeout();
 
+    void addToQueue();
+
     void on_actionShow_queue_triggered();
 
     void on_actionRunBackup_triggered();
@@ -48,6 +52,8 @@ private slots:
     void on_actionAdd_to_queue_triggered();
 
 private:
+    QString getScheduleString(const TaskSchedule &schedule);
+
     Ui::MainWindow *ui;
     TaskQueue *taskQueue;
 

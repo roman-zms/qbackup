@@ -1,11 +1,12 @@
 #include "backuptask.h"
+#include <QDebug>
 
 BackupTask::BackupTask(QString name, QObject *parent) : QObject(parent),
-    settings(new QSettings(this)),
     specs(new BackupTaskSpecs(name)),
+    settings(new QSettings(this)),
     timer(new QTimer(this))
 {
-    settings->beginGroup("Tasks");
+    //settings->beginGroup("Tasks");
     settings->beginGroup(name);
 
     initTask();
@@ -13,8 +14,7 @@ BackupTask::BackupTask(QString name, QObject *parent) : QObject(parent),
 
 BackupTask::~BackupTask()
 {
-    saveTask();
-    settings->sync();
+    //saveTask();
     settings->deleteLater();
 }
 
@@ -70,11 +70,19 @@ QDateTime BackupTask::getNearestDateTime()
 
 void BackupTask::initTimer()
 {
-    if(timer != nullptr) timer->deleteLater();
+    //if(timer != nullptr) timer->deleteLater();
+    //if(timer){
+    //    qDebug() << timer;
+    //    timer->stop();
+    //    timer->deleteLater();
+    //}
+    timer->stop();
+    disconnect(timer, &QTimer::timeout,0,0);
+    qDebug() <<timer->isActive();
     if(!specs->getAutoBackup()) {
         return;
     }
-    timer = new QTimer(this);
+    //timer = new QTimer(this);
     timer->start(QDateTime::currentDateTime().msecsTo(getNearestDateTime()));
     connect(timer, &QTimer::timeout, this, &BackupTask::timeout);
     connect(timer, &QTimer::timeout, this, &BackupTask::initTimer);
