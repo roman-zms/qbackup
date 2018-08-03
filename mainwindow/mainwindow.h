@@ -23,7 +23,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
@@ -60,6 +60,12 @@ private:
     QMap<QString, BackupTask*> tasks;
 
     GeneralSettings *gSettings;
+
+    QString enterTaskName();
+
+    void addTaskItemToTree(QTreeWidget *tree, const BackupTask *task);
+
+    void scheduleBackup(const BackupTask *task);
 };
 
 #endif // MAINWINDOW_H

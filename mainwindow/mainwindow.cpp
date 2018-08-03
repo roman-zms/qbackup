@@ -9,9 +9,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     loadAllTasks();
-
     taskQueue->hide();
-
     connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this, 			SLOT(openTaskSettings(QTreeWidgetItem*)));
 
@@ -19,8 +17,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+    for(auto key : tasks.keys()) {
+        tasks.take(key)->deleteLater();
+    }
+
     delete taskQueue;
+    delete ui;
 }
 
 void MainWindow::on_actionAddTask_triggered()
@@ -30,40 +32,37 @@ void MainWindow::on_actionAddTask_triggered()
 
 void MainWindow::loadTask(QString name)
 {
-    if(!tasks.contains(name)){
-        BackupTask *task = new BackupTask(name);
-        tasks.insert(name, task);
+    if (!tasks.contains(name)) {
+        tasks.insert(name, new BackupTask(name));
     }
 
     BackupTask *task = tasks.value(name);
-    if(task->specs->getAutoBackup())
-        connect(task, &BackupTask::timeout, this, &MainWindow::onTaskTimeout, Qt::UniqueConnection);
-    else
-        disconnect(task, &BackupTask::timeout, this, &MainWindow::onTaskTimeout);
 
-    QStringList taskSettings;
-    taskSettings << task->specs->getName() << task->specs->getPathFrom() << task->specs->getPathTo();
-    if(task->specs->getAutoBackup())
-        taskSettings << getScheduleString(*(task->specs->getSchedule()));
-
-    QTreeWidgetItem *item = new QTreeWidgetItem(ui->treeWidget, taskSettings);
-    ui->treeWidget->addTopLevelItem(item);
+    scheduleBackup(task);
+    addTaskItemToTree(ui->treeWidget, task);
 }
 
 void MainWindow::onTaskTimeout()
 {
     BackupTask *task = qobject_cast<BackupTask*>(sender());
-    taskQueue->addTask(task->specs);
+
+    qDebug() << "Timeout "
+             << task->specs->getName();
+
+    taskQueue->addTask(task);
+    taskQueue->start();
 }
 
 void MainWindow::addToQueue()
 {
-    if(ui->treeWidget->selectedItems().empty()) return;
+    if (ui->treeWidget->selectedItems().empty())
+        return;
+
     foreach (QTreeWidgetItem *item, ui->treeWidget->selectedItems()) {
-        auto *spec = tasks.value(item->text(0))->specs;
-        if(QDir(spec->getPathFrom()).exists() &&
-                        QDir(spec->getPathTo()).exists()) {
-            this->taskQueue->addTask(tasks.value(item->text(0))->specs);
+        BackupTask *task = tasks.value(item->text(0));
+
+        if (task->isAbleToPerform()) {
+            this->taskQueue->addTask(task);
         } else {
             QMessageBox::critical(this, "Error", "Invalid task");
         }
@@ -72,27 +71,13 @@ void MainWindow::addToQueue()
 
 void MainWindow::addNewTask()
 {
-    QString name;
-    bool succes;
+    QString name = enterTaskName();
+    if (name.isEmpty())
+        return;
 
-    do {
-        name = QInputDialog::getText(
-                this, tr("Name"),
-                tr("Enter new backup name:"),
-                QLineEdit::Normal,"",&succes);
-
-        if(succes==false)
-            return;
-
-    } while(name.isEmpty());
-
-    QString itemString = "";
-    QTreeWidgetItem *item = new QTreeWidgetItem(
-                ui->treeWidget, QString("").append(name + ",/path/from/,/path/to/").split(','));
-    //item->setCheckState(0, Qt::CheckState::Unchecked);
-    ui->treeWidget->addTopLevelItem(item);
-
-    openTaskSettings(new BackupTask(name));
+    tasks.insert(name, new BackupTask(name));
+    addTaskItemToTree(ui->treeWidget, tasks.value(name));
+    openTaskSettings(tasks.value(name));
 }
 
 void MainWindow::removeTask()
@@ -115,18 +100,17 @@ void MainWindow::removeTask()
 void MainWindow::openTaskSettings(QTreeWidgetItem *item)
 {
     QString name = item->text(0);
-
     openTaskSettings(tasks.value(name));
 }
 
 void MainWindow::openTaskSettings(BackupTask *task)
 {
+    if (task == nullptr) return;
+
     TaskSettings *taskSettings = new TaskSettings(task);
 
-    connect(taskSettings, SIGNAL(finished(int)), taskSettings, SLOT(deleteLater()));
     connect(taskSettings, SIGNAL(accepted()), this, SLOT(loadAllTasks()));
     taskSettings->show();
-
 }
 
 void MainWindow::loadAllTasks()
@@ -134,10 +118,10 @@ void MainWindow::loadAllTasks()
     ui->treeWidget->clear();
 
     QSettings *settings = new QSettings(this);
-    //settings->beginGroup("Tasks");
 
     QStringList taskNames = settings->childGroups();
     taskNames.removeOne("General");
+
     settings->deleteLater();
 
     foreach(QString taskName, taskNames) {
@@ -173,26 +157,39 @@ void MainWindow::on_actionAdd_to_queue_triggered()
     addToQueue();
 }
 
-QString MainWindow::getScheduleString(const TaskSchedule &schedule)
+QString MainWindow::enterTaskName()
 {
-    if(schedule.getTime().isNull()) return "";
-    QStringList daysOfWeek{
-        tr("Mo"),
-        tr("Tu"),
-        tr("We"),
-        tr("Th"),
-        tr("Fr"),
-        tr("Sa"),
-        tr("Su")
-    };
-    QString string;
-    QTextStream str(&string);
-    str << schedule.getTime().toString("hh:mm") << " ";
-    for(int i=0; i<7; i++) {
-        if(schedule.containsDay(i+1)) {
-            str << daysOfWeek.at(i) <<" ";
-        }
-    }
-    return string;
+    bool succes = false;
+    QString name = QInputDialog::getText(
+                            this, tr("Name"),
+                            tr("Enter new backup name:"),
+                            QLineEdit::Normal,"",&succes);
 
+    if(succes==false)
+        return "";
+    else
+        return name;
+}
+
+void MainWindow::addTaskItemToTree(QTreeWidget *tree, const BackupTask *task)
+{
+    BackupTaskSpecs *specs = task->specs;
+
+    QStringList taskSettings;
+    taskSettings << specs->getName()
+                 << specs->getPathFrom()
+                 << specs->getPathTo()
+                 << specs->getSchedule()->toString();
+
+    QTreeWidgetItem *item = new QTreeWidgetItem(tree, taskSettings);
+    tree->addTopLevelItem(item);
+}
+
+void MainWindow::scheduleBackup(const BackupTask *task)
+{
+    if(task->specs->getAutoBackup())
+        qDebug() << connect(task, &BackupTask::timeout,
+                            this, &MainWindow::onTaskTimeout, Qt::UniqueConnection);
+    else
+        disconnect(task, &BackupTask::timeout, this, &MainWindow::onTaskTimeout);
 }

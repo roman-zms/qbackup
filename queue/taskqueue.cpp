@@ -4,6 +4,8 @@
 #include <QDebug>
 #include <QSettings>
 
+#include <backuptask/backuptask.h>
+
 TaskQueue::TaskQueue(QWidget *parent) :
         QWidget(parent),
         ui(new Ui::TaskQueue),
@@ -27,7 +29,7 @@ TaskQueue::TaskQueue(QWidget *parent) :
         updateTotalProgressBar();
 
         currentOperation = nothing;
-        disconnect(yd, &YDAPI::uploadProgress, 0, 0);
+        disconnect(yd, &YDAPI::uploadProgress, nullptr, nullptr);
         start();
     });
 
@@ -71,8 +73,10 @@ QString TaskQueue::genArchiveName(BackupTaskSpecs *task)
     return archiveName;
 }
 
-void TaskQueue::addTask(BackupTaskSpecs *taskSpecs)
+void TaskQueue::addTask(BackupTask *task)
 {
+    BackupTaskSpecs *taskSpecs = task->specs;
+
     QStringList itemText;
     itemText << taskSpecs->getName() << "0";
     QString token = QSettings().value("Token").toString();
@@ -122,7 +126,7 @@ void TaskQueue::compress()
 
 void TaskQueue::upload()
 {
-    QObject::disconnect(compressor, &CompressorWrapper::compressProgress, 0, 0);
+    QObject::disconnect(compressor, &CompressorWrapper::compressProgress, nullptr, nullptr);
 
     if(currentTask.first->getUpload() && QSettings().value("Token").toString() != "") {
         yd->setToken(QSettings().value("Token").toString());
@@ -144,7 +148,7 @@ void TaskQueue::stop()
 {
     switch (currentOperation) {
     case compressing:
-        disconnect(compressor, &CompressorWrapper::compressProgress, 0, 0);
+        disconnect(compressor, &CompressorWrapper::compressProgress, nullptr, nullptr);
         completedOperations--;
         updateTotalProgressBar();
 
@@ -153,7 +157,7 @@ void TaskQueue::stop()
 
         break;
     case uploading:
-        disconnect(yd, &YDAPI::uploadProgress, 0, 0);
+        disconnect(yd, &YDAPI::uploadProgress, nullptr, nullptr);
         completedOperations -= 2;
         updateTotalProgressBar();
 

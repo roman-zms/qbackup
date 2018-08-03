@@ -25,6 +25,7 @@ void ProgressBarDelegate::paint(
         progressBarOption.progress = progress;
         progressBarOption.text = QString::number(progress).append("%");
         progressBarOption.textVisible = true;
+        //progressBarOption.textVisible = false;
     }
 
     QStyledItemDelegate::paint(painter, option, index);

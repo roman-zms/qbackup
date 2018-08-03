@@ -15,6 +15,8 @@ public:
     explicit BackupTask(QString name, QObject *parent = nullptr);
     ~BackupTask();
 
+    bool isAbleToPerform();
+
     BackupTaskSpecs *specs;
 
 public slots:
@@ -29,7 +31,7 @@ signals:
 private:
     void initTask();
     void saveTask();
-    QDateTime getNearestDateTime();
+    QDateTime getNearestDateTime(const TaskSchedule *schedule);
 
     //QDateTime nearestDateTime;
     QSettings *settings;
