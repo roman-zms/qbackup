@@ -6,6 +6,8 @@
 #include <QTreeWidgetItem>
 #include <QDir>
 
+#include <backuptask/backuptask.h>
+
 #include "progressbardelegate.h"
 #include "backuptask/backuptaskspecs.h"
 #include "compressor/compressorwrapper.h"
@@ -20,8 +22,8 @@ class TaskQueue : public QWidget
     Q_OBJECT
 
 public:
-    explicit TaskQueue(QWidget *parent = 0);
-    void addTask(BackupTaskSpecs *taskSpecs);
+    explicit TaskQueue(QWidget *parent = nullptr);
+    void addTask(BackupTask *task);
     ~TaskQueue();
 
 public slots:

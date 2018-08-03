@@ -1,5 +1,7 @@
 #include "taskschedule.h"
 
+#include <QTextStream>
+
 TaskSchedule::TaskSchedule(QObject *parent) : QObject(parent)
 {
     for(int i=0; i<7; i++)
@@ -36,4 +38,31 @@ bool TaskSchedule::getDay(int day) const
 void TaskSchedule::setDay(int i, bool value)
 {
     days.replace(i, QVariant(value));
+}
+
+QString TaskSchedule::toString()
+{
+    if (getTime().isNull())
+        return "";
+
+    QStringList daysOfWeek {
+        tr("Mo"),
+        tr("Tu"),
+        tr("We"),
+        tr("Th"),
+        tr("Fr"),
+        tr("Sa"),
+        tr("Su")
+    };
+
+    QString string;
+    QTextStream str(&string);
+    str << getTime().toString("hh:mm") << " ";
+
+    for (int i=0; i<7; i++) {
+        if (containsDay(i+1)) {
+            str << daysOfWeek.at(i) <<" ";
+        }
+    }
+    return string;
 }

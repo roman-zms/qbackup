@@ -16,7 +16,7 @@ class TaskSettings : public QDialog
     Q_OBJECT
 
 public:
-    explicit TaskSettings(BackupTask *task, QWidget *parent = 0);
+    explicit TaskSettings(BackupTask *task, QWidget *parent = nullptr);
     ~TaskSettings();
 
 public slots:

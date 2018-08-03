@@ -30,6 +30,8 @@ public:
     bool getDay(int day) const;
     void setDay(int i, bool value);
 
+    QString toString();
+
 private:
     QTime time;
     QList<QVariant> days;
