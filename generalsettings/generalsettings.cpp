@@ -1,7 +1,9 @@
 #include "generalsettings.h"
 #include "ui_generalsettings.h"
 
+#include <QCoreApplication>
 #include <QDesktopServices>
+#include <QDir>
 #include <QSettings>
 #include <QUrl>
 
@@ -52,13 +54,13 @@ void GeneralSettings::on_autoStartCheckBox_toggled(bool checked)
     if(checked){
         QSettings setting("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
                           QSettings::NativeFormat);
-        setting.setValue(APPLICATION_NAME,
+        setting.setValue(QCoreApplication::applicationName(),
                          QDir::toNativeSeparators(QCoreApplication::applicationFilePath()) + " MINIMIZE");
         setting.sync();
     } else {
         QSettings setting("HKEY_CURRENT_USER\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run",
                           QSettings::NativeFormat);
-        setting.remove(APPLICATION_NAME);
+        setting.remove(QCoreApplication::applicationName());
         setting.sync();
     }
 #endif

@@ -23,9 +23,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 win32 {
-    INCLUDEPATH += D:/Qt/quazip/include
-    DEPENDPATH += D:/Qt/quazip/include
-    LIBS += -LD:/Qt/quazip/lib/ -lquazip
+    INCLUDEPATH += C:/Qt/quazip/include
+    DEPENDPATH += C:/Qt/quazip/include
+    LIBS += -LC:/Qt/quazip/lib/ -lquazip
 } else {
     LIBS += -lquazip5
 }
