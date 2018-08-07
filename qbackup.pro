@@ -43,7 +43,16 @@ SOURCES += \
     compressor/compressor.cpp \
     compressor/compressorwrapper.cpp \
     uploader/ydapi.cpp \
-    generalsettings/generalsettings.cpp
+    generalsettings/generalsettings.cpp \
+    queue/ntaskqueue.cpp \
+    queue/state/ntaskstate.cpp \
+    queue/state/nwaitingtaskstate.cpp \
+    queue/state/ncompressingtaskstate.cpp \
+    queue/state/nuploadingtaskstate.cpp \
+    compressor/taskcompressor.cpp \
+    queue/state/ncompressedstate.cpp \
+    queue/state/nuploadedstate.cpp \
+    uploader/taskuploader.cpp
 
 FORMS += \
     mainwindow/mainwindow.ui \
@@ -62,4 +71,13 @@ HEADERS += \
     compressor/compressor.h \
     compressor/compressorwrapper.h \
     uploader/ydapi.h \
-    generalsettings/generalsettings.h
+    generalsettings/generalsettings.h \
+    queue/ntaskqueue.h \
+    queue/state/ntaskstate.h \
+    queue/state/nwaitingtaskstate.h \
+    queue/state/ncompressingtaskstate.h \
+    queue/state/nuploadingtaskstate.h \
+    compressor/taskcompressor.h \
+    queue/state/ncompressedstate.h \
+    queue/state/nuploadedstate.h \
+    uploader/taskuploader.h
