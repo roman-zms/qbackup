@@ -2,6 +2,7 @@
 #include "ui_taskqueueform.h"
 
 #include <QTreeView>
+#include <queue/progressbardelegate.h>
 #include <queue/ntaskqueuemodel.h>
 
 TaskQueueForm::TaskQueueForm(NTaskQueue *queue, QWidget *parent) :
@@ -11,6 +12,9 @@ TaskQueueForm::TaskQueueForm(NTaskQueue *queue, QWidget *parent) :
 {
     ui->setupUi(this);
     ui->treeView->setModel(new NTaskQueueModel(queue, this));
+    ui->treeView->setItemDelegateForColumn(1, new ProgressBarDelegate(this));
+    ui->treeView->setItemDelegateForColumn(2, new ProgressBarDelegate(this));
+    initConnections();
 }
 
 TaskQueueForm::~TaskQueueForm()

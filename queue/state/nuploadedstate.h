@@ -10,6 +10,10 @@ class NUploadedState : public NTaskState
 public:
     using NTaskState::NTaskState;
     virtual bool start() override;
+
+    // NTaskState interface
+public:
+    virtual QString stateName() override;
 };
 
 #endif // NUPLOADEDSTATE_H

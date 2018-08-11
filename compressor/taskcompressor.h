@@ -22,6 +22,9 @@ signals:
     void onCompressSucces();
     void compressProgress(qint64 done, qint64 total);
 
+//private slots:
+//    void onCompressProgress(qint64 done, qint64 total);
+
 private:
     void initSignals();
     void setLastArciveFile(QString fileName);

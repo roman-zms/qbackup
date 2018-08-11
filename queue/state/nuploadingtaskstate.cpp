@@ -1,19 +1,28 @@
 #include "nuploadingtaskstate.h"
+#include <queue/state/nstatefactory.h>
 
 bool NUploadingTaskState::stop()
 {
-    getYD()->stop();
+    getUploader()->stop();
 
-    getTaskList().push_front(getCurrentTask());
     setCurrentTask(nullptr);
 
-    changeState(NTaskQueue::StateType::Waiting);
+    setState(factory->waiting());
     return true;
 }
 
 
 bool NUploadingTaskState::finished()
 {
-    changeState(NTaskQueue::Uploaded);
-    return queue->start();
+    setState(factory->uploaded());
+    setCurrentTask(nullptr);
+    getTaskList().removeFirst();
+
+    return !queue->start();
+}
+
+
+QString NUploadingTaskState::stateName()
+{
+    return "Uploading";
 }

@@ -1,18 +1,24 @@
 #include "ncompressingtaskstate.h"
+#include <queue/state/nstatefactory.h>
 
 bool NCompressingTaskState::stop()
 {
     getCompressor()->stop();
 
-    getTaskList().push_front(getCurrentTask());
     setCurrentTask(nullptr);
 
-    changeState(NTaskQueue::StateType::Waiting);
+    setState(factory->waiting());
     return true;
 }
 
 bool NCompressingTaskState::finished()
 {
-    changeState(NTaskQueue::Compressed);
-    return queue->start();
+    setState(factory->compressed());
+    return !queue->start();
+}
+
+
+QString NCompressingTaskState::stateName()
+{
+    return "Compressing";
 }

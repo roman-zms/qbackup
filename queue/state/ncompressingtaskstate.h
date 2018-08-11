@@ -13,6 +13,10 @@ public:
 public:
     virtual bool stop() override;
     virtual bool finished() override;
+
+    // NTaskState interface
+public:
+    virtual QString stateName() override;
 };
 
 #endif // NRUNNUNGTASKSTATE_H

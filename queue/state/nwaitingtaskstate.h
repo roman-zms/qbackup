@@ -12,6 +12,10 @@ public:
     virtual bool start() override;
     virtual bool clear() override;
 
+
+    // NTaskState interface
+public:
+    virtual QString stateName() override;
 };
 
 #endif // NWAITINGTASKSTATE_H

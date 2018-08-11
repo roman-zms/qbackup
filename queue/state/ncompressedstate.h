@@ -9,6 +9,10 @@ class NCompressedState : public NTaskState
 public:
     using NTaskState::NTaskState;
     virtual bool start() override;
+
+    // NTaskState interface
+public:
+    virtual QString stateName() override;
 };
 
 #endif // NCOMPRESSEDSTATE_H

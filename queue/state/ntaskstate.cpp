@@ -1,6 +1,8 @@
 #include "ntaskstate.h"
 
-NTaskState::NTaskState(NTaskQueue *parent) : QObject(parent), queue(parent)
+NTaskState::NTaskState(NTaskQueue *parent) : QObject(parent),
+    queue(parent),
+    factory(queue->factory)
 {
 
 }
@@ -46,14 +48,14 @@ TaskCompressor *NTaskState::getCompressor()
     return queue->compressor;
 }
 
-YDAPI *NTaskState::getYD()
+TaskUploader *NTaskState::getUploader()
 {
-    return queue->yd;
+    return queue->uploader;
 }
 
-void NTaskState::changeState(NTaskQueue::StateType state)
+void NTaskState::setState(NTaskState *state)
 {
-    queue->changeState(state);
+    queue->setState(state);
 }
 
 bool NTaskState::setCurrentTask(BackupTask *task)

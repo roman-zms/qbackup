@@ -12,6 +12,10 @@ public:
     // NTaskState interface
     virtual bool stop() override;
     virtual bool finished() override;
+
+    // NTaskState interface
+public:
+    virtual QString stateName() override;
 };
 
 #endif // NUPLOADINGTASKSTATE_H

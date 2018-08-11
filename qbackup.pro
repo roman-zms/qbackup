@@ -52,13 +52,17 @@ SOURCES += \
     compressor/taskcompressor.cpp \
     queue/state/ncompressedstate.cpp \
     queue/state/nuploadedstate.cpp \
-    uploader/taskuploader.cpp
+    uploader/taskuploader.cpp \
+    queue/state/nstatefactory.cpp \
+    queue/taskqueueform.cpp \
+    queue/ntaskqueuemodel.cpp
 
 FORMS += \
     mainwindow/mainwindow.ui \
     mainwindow/tasksettings/tasksettings.ui \
     queue/taskqueue.ui \
-    generalsettings/generalsettings.ui
+    generalsettings/generalsettings.ui \
+    queue/taskqueueform.ui
 
 HEADERS += \
     mainwindow/mainwindow.h \
@@ -80,4 +84,7 @@ HEADERS += \
     compressor/taskcompressor.h \
     queue/state/ncompressedstate.h \
     queue/state/nuploadedstate.h \
-    uploader/taskuploader.h
+    uploader/taskuploader.h \
+    queue/state/nstatefactory.h \
+    queue/taskqueueform.h \
+    queue/ntaskqueuemodel.h

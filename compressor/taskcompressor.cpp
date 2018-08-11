@@ -4,7 +4,8 @@
 #include "taskcompressor.h"
 
 TaskCompressor::TaskCompressor(QObject *parent) : QObject(parent),
-    compressor(new CompressorWrapper(this))
+    compressor(new CompressorWrapper(this)),
+    lastAcrhive(nullptr)
 {
     initSignals();
 }
@@ -24,6 +25,11 @@ bool TaskCompressor::compressTask(BackupTask *task)
         return false;
 }
 
+void TaskCompressor::stop()
+{
+    compressor->stop();
+}
+
 void TaskCompressor::initSignals()
 {
     connect(compressor, &CompressorWrapper::onCompressError,
@@ -32,6 +38,8 @@ void TaskCompressor::initSignals()
             this, &TaskCompressor::onCompressSucces);
     connect(compressor, &CompressorWrapper::compressProgress,
             this, &TaskCompressor::compressProgress);
+    //connect(compressor, &CompressorWrapper::compressProgress,
+    //        this, &TaskCompressor::onCompressProgress);
 }
 
 void TaskCompressor::setLastArciveFile(QString fileName)
@@ -66,4 +74,9 @@ QFile *TaskCompressor::getLastAcrhive() const
 {
     return lastAcrhive;
 }
+
+//void TaskCompressor::onCompressProgress(qint64 done, qint64 total)
+//{
+//    emit compressProgress(done, total);
+//}
 
