@@ -5,11 +5,15 @@
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    taskQueue(new TaskQueue())
+    //taskQueue(new TaskQueue()),
+    nTaskQueue(new NTaskQueue(this)),
+    TQForm(new TaskQueueForm(nTaskQueue))
 {
     ui->setupUi(this);
     loadAllTasks();
-    taskQueue->hide();
+    //taskQueue->hide();
+    TQForm->hide();
+
     connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this, 			SLOT(openTaskSettings(QTreeWidgetItem*)));
 
@@ -21,7 +25,7 @@ MainWindow::~MainWindow()
         tasks.take(key)->deleteLater();
     }
 
-    delete taskQueue;
+    //delete taskQueue;
     delete ui;
 }
 
@@ -49,8 +53,11 @@ void MainWindow::onTaskTimeout()
     qDebug() << "Timeout "
              << task->specs->getName();
 
-    taskQueue->addTask(task);
-    taskQueue->start();
+    //taskQueue->addTask(task);
+    //taskQueue->start();
+
+    nTaskQueue->put(task);
+    nTaskQueue->start();
 }
 
 void MainWindow::addToQueue()
@@ -62,7 +69,8 @@ void MainWindow::addToQueue()
         BackupTask *task = tasks.value(item->text(0));
 
         if (task->isAbleToPerform()) {
-            this->taskQueue->addTask(task);
+            //this->taskQueue->addTask(task);
+            nTaskQueue->put(task);
         } else {
             QMessageBox::critical(this, "Error", "Invalid task");
         }
@@ -136,13 +144,15 @@ void MainWindow::on_actionRemoveTask_triggered()
 
 void MainWindow::on_actionShow_queue_triggered()
 {
-    taskQueue->show();
+    //taskQueue->show();
+    TQForm->show();
 }
 
 void MainWindow::on_actionRunBackup_triggered()
 {
     on_actionAdd_to_queue_triggered();
-    taskQueue->start();
+    //taskQueue->start();
+    nTaskQueue->start();
 }
 
 void MainWindow::on_actionSettings_triggered()

@@ -8,6 +8,9 @@
 #include <QSettings>
 #include <QMessageBox>
 
+#include <queue/ntaskqueue.h>
+#include <queue/taskqueueform.h>
+
 #include "backuptask/backuptask.h"
 #include "tasksettings/tasksettings.h"
 #include "queue/taskqueue.h"
@@ -55,7 +58,10 @@ private:
     QString getScheduleString(const TaskSchedule &schedule);
 
     Ui::MainWindow *ui;
-    TaskQueue *taskQueue;
+
+    //TaskQueue *taskQueue;
+    NTaskQueue *nTaskQueue;
+    TaskQueueForm *TQForm;
 
     QMap<QString, BackupTask*> tasks;
 
