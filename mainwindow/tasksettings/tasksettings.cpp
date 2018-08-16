@@ -18,7 +18,6 @@ TaskSettings::TaskSettings(BackupTask *task, QWidget *parent) :
 
     connect(this, &TaskSettings::finished, this, &TaskSettings::deleteLater);
 
-    //task = new BackupTask(name, this);
     this->setWindowTitle(task->specs->getName());
     init();
 }
@@ -37,7 +36,7 @@ TaskSettings::~TaskSettings()
 
 void TaskSettings::init()
 {
-    for(int i=0; i<7; i++) _days.append(false);
+    for (int i = 0; i < 7; i++) _days.append(false);
 
     ui->lineEditFrom->setText(task->specs->getPathFrom());
     ui->lineEditTo->setText(task->specs->getPathTo());
@@ -46,7 +45,7 @@ void TaskSettings::init()
     ui->autoBackupCheckBox->setChecked(task->specs->getAutoBackup());
     ui->shutdownCheckBox->setChecked(task->specs->getShutdown());
 
-    for(int i=0; i<7; i++) {
+    for ( int i = 0; i < 7; i++) {
         Qt::CheckState state;
         if(task->specs->getSchedule()->getDay(i) == true)
             state = Qt::Checked;
@@ -73,7 +72,7 @@ void TaskSettings::save()
     //for(int i=0; i<7; i++)
     //    task->specs->getSchedule()->setDay(i, _days.at(i));
 
-    for(int i=0; i<7; i++) {
+    for (int i = 0; i < 7; i++) {
         task->specs->getSchedule()->setDay(i, _days.at(i));
     }
 

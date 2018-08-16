@@ -71,7 +71,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="shutdownChechBox">
+    <widget class="QCheckBox" name="shutdownCheckBox">
      <property name="text">
       <string>Shutdown</string>
      </property>
