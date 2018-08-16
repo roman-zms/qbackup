@@ -7,6 +7,9 @@ bool NWaitingTaskState::start()
         return false;
 
     setCurrentTask(getTaskList().first());
+    if (getCurrentTask()->specs->getShutdown()) {
+        turnOnShutdown();
+    }
 
     if (getCompressor()->compressTask(getCurrentTask())) {
         setState(factory->compressing());

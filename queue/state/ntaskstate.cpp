@@ -69,3 +69,18 @@ BackupTask *NTaskState::getCurrentTask()
 {
     return queue->currentTask;
 }
+
+void NTaskState::turnOnShutdown()
+{
+    queue->shutdown= true;
+}
+
+void NTaskState::turnOffShutdown()
+{
+    queue->shutdown = false;
+}
+
+bool NTaskState::isShutdown()
+{
+    return queue->shutdown;
+}

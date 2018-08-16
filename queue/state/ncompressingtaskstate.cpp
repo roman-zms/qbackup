@@ -4,8 +4,8 @@
 bool NCompressingTaskState::stop()
 {
     getCompressor()->stop();
-
     setCurrentTask(nullptr);
+    turnOffShutdown();
 
     setState(factory->waiting());
     return true;

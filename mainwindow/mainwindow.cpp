@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this, 			SLOT(openTaskSettings(QTreeWidgetItem*)));
 
+    connect(nTaskQueue, &NTaskQueue::shutdownCommand,
+            this, &MainWindow::shutdownSystem);
 }
 
 MainWindow::~MainWindow()
