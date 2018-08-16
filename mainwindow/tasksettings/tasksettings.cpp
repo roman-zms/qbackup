@@ -43,8 +43,9 @@ void TaskSettings::init()
     ui->lineEditTo->setText(task->specs->getPathTo());
 
     ui->uploadCheckBox->setChecked(task->specs->getUpload());
-
     ui->autoBackupCheckBox->setChecked(task->specs->getAutoBackup());
+    ui->shutdownCheckBox->setChecked(task->specs->getShutdown());
+
     for(int i=0; i<7; i++) {
         Qt::CheckState state;
         if(task->specs->getSchedule()->getDay(i) == true)
@@ -67,6 +68,7 @@ void TaskSettings::save()
 
     task->specs->setUpload(ui->uploadCheckBox->isChecked());
     task->specs->setAutoBackup(ui->autoBackupCheckBox->isChecked());
+    task->specs->setShutdown(ui->shutdownCheckBox->isChecked());
 
     //for(int i=0; i<7; i++)
     //    task->specs->getSchedule()->setDay(i, _days.at(i));

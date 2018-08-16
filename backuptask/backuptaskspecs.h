@@ -26,6 +26,9 @@ public:
 
     TaskSchedule *getSchedule() const;
 
+    bool getShutdown() const;
+    void setShutdown(bool value);
+
 signals:
 
 public slots:
@@ -39,6 +42,7 @@ private:
 
     bool autoBackup;
     bool upload;
+    bool shutdown;
 
 };
 

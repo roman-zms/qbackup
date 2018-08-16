@@ -37,6 +37,7 @@ void BackupTask::initTask()
 
     this->specs->setAutoBackup(settings->value("AutoBackup").toBool());
     this->specs->setUpload(settings->value("Upload").toBool());
+    this->specs->setShutdown(settings->value("Shutdown").toBool());
 
     QList<QVariant> days = settings->value("Days").toList();
 
@@ -59,6 +60,7 @@ void BackupTask::saveTask()
     settings->setValue("PathTo",      this->specs->getPathTo());
     settings->setValue("AutoBackup",  this->specs->getAutoBackup());
     settings->setValue("Upload",      this->specs->getUpload());
+    settings->setValue("Shutdown",	  this->specs->getShutdown());
     settings->setValue("Days",		  this->specs->getSchedule()->getDays());
     settings->setValue("Time",		  this->specs->getSchedule()->getTime());
     settings->sync();
