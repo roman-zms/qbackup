@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
+#include <timedmessage/timedmessagebox.h>
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -74,6 +76,31 @@ void MainWindow::addToQueue()
         } else {
             QMessageBox::critical(this, "Error", "Invalid task");
         }
+    }
+}
+
+void MainWindow::shutdownSystem()
+{
+    TimedMessageBox *messageBox = new TimedMessageBox(
+                            60,
+                            TimedMessageBox::Question,
+                            tr("Shutdown"),
+                            tr("Do you want to shutdown now? (%1)"),
+                            TimedMessageBox::No | TimedMessageBox::Yes
+                        );
+
+    messageBox->setDefaultButton(TimedMessageBox::Yes);
+
+    bool result = messageBox->exec();
+
+    if (result == true) {
+        qDebug() << "Shutdown " << QTime::currentTime();
+#ifdef Q_OS_WIN32
+        QProcess::startDetached("shutdown -s -f -t 00");
+#endif
+#ifdef Q_OS_LINUX
+        //QProcess::startDetached("shutdown -P now");
+#endif
     }
 }
 

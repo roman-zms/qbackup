@@ -46,6 +46,8 @@ private slots:
 
     void addToQueue();
 
+    void shutdownSystem();
+
     void on_actionShow_queue_triggered();
 
     void on_actionRunBackup_triggered();

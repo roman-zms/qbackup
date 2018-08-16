@@ -55,7 +55,8 @@ SOURCES += \
     uploader/taskuploader.cpp \
     queue/state/nstatefactory.cpp \
     queue/taskqueueform.cpp \
-    queue/ntaskqueuemodel.cpp
+    queue/ntaskqueuemodel.cpp \
+    timedmessage/timedmessagebox.cpp
 
 FORMS += \
     mainwindow/mainwindow.ui \
@@ -87,4 +88,5 @@ HEADERS += \
     uploader/taskuploader.h \
     queue/state/nstatefactory.h \
     queue/taskqueueform.h \
-    queue/ntaskqueuemodel.h
+    queue/ntaskqueuemodel.h \
+    timedmessage/timedmessagebox.h
