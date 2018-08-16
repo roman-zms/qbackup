@@ -83,6 +83,12 @@ void NTaskQueue::finish()
     if (succes) {
         emit finished();
         qDebug() << "Finished";
+
+        if (shutdown) {
+            shutdown = false;
+            emit shutdownCommand();
+            qDebug() << "Shutdown command";
+        }
     }
 }
 

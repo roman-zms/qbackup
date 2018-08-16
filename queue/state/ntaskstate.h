@@ -31,6 +31,10 @@ protected:
     bool setCurrentTask(BackupTask *task);
     BackupTask* getCurrentTask();
 
+    void turnOnShutdown();
+    void turnOffShutdown();
+    bool isShutdown();
+
 protected:
     NTaskQueue *queue;
     NStateFactory *factory;

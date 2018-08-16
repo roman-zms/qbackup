@@ -4,8 +4,8 @@
 bool NUploadingTaskState::stop()
 {
     getUploader()->stop();
-
     setCurrentTask(nullptr);
+    turnOffShutdown();
 
     setState(factory->waiting());
     return true;

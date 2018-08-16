@@ -2,7 +2,7 @@
 
 BackupTaskSpecs::BackupTaskSpecs(QString name, QObject *parent) : QObject(parent), name(name)
 {
-    schedule = new TaskSchedule();
+    schedule = new TaskSchedule(this);
 }
 
 QString BackupTaskSpecs::getName() const
@@ -53,4 +53,14 @@ void BackupTaskSpecs::setUpload(bool value)
 TaskSchedule *BackupTaskSpecs::getSchedule() const
 {
     return schedule;
+}
+
+bool BackupTaskSpecs::getShutdown() const
+{
+    return shutdown;
+}
+
+void BackupTaskSpecs::setShutdown(bool value)
+{
+    shutdown = value;
 }

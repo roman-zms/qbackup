@@ -48,6 +48,7 @@ signals:
     void cleared();
     void finished();
     void progress(qint64 done, qint64 total);
+    void shutdownCommand();
 
 private slots:
     void onProgress(qint64 done, qint64 total);
@@ -70,6 +71,8 @@ private:
 
     qint64 done = 0;
     qint64 total = 0;
+
+    bool shutdown = false;
 };
 
 #endif // NTASKQUEUE_H
