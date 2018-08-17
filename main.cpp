@@ -12,6 +12,9 @@ int main(int argc, char *argv[])
 
     QApplication a(argc, argv);
 
+#ifdef Q_OS_WIN32
+    QTextCodec::setCodecForLocale(QTextCodec::codecForName("IBM866"));
+#endif
 
     QTranslator *qtTrans = new QTranslator;
     qtTrans->load("qt_"+QLocale::system().name(),
@@ -27,7 +30,14 @@ int main(int argc, char *argv[])
         qApp->installTranslator(translator);
 
     MainWindow w;
-    w.show();
+
+    if(argc > 1){
+        if (QString(argv[1]) == "MINIMIZE")
+        //if(argv[1] == (char*)"MINIMIZE")
+            w.hide();
+    } else {
+        w.show();
+    }
 
     return a.exec();
 }

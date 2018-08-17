@@ -3,12 +3,11 @@
 
 bool NUploadedState::start()
 {
+    setCurrentTask(nullptr);
+    getTaskList().removeFirst();
     setState(factory->waiting());
 
-    if (!getTaskList().isEmpty())
-        return queue->start();
-
-    return true;
+    return queue->start();
 }
 
 

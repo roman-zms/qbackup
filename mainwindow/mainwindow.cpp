@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <timedmessage/timedmessagebox.h>
+#include <QProcess>
 
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -97,9 +98,7 @@ void MainWindow::shutdownSystem()
 
     messageBox->setDefaultButton(TimedMessageBox::Yes);
 
-    bool result = messageBox->exec();
-
-    if (result == true) {
+    if (messageBox->exec() == TimedMessageBox::Yes) {
         qDebug() << "Shutdown " << QTime::currentTime();
 #ifdef Q_OS_WIN32
         QProcess::startDetached("shutdown -s -f -t 00");

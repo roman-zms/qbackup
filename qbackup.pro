@@ -38,7 +38,6 @@ SOURCES += \
     mainwindow/tasksettings/tasksettings.cpp \
     backuptask/backuptaskspecs.cpp \
     backuptask/taskschedule.cpp \
-    queue/taskqueue.cpp \
     queue/progressbardelegate.cpp \
     compressor/compressor.cpp \
     compressor/compressorwrapper.cpp \
@@ -61,7 +60,6 @@ SOURCES += \
 FORMS += \
     mainwindow/mainwindow.ui \
     mainwindow/tasksettings/tasksettings.ui \
-    queue/taskqueue.ui \
     generalsettings/generalsettings.ui \
     queue/taskqueueform.ui
 
@@ -71,7 +69,6 @@ HEADERS += \
     mainwindow/tasksettings/tasksettings.h \
     backuptask/backuptaskspecs.h \
     backuptask/taskschedule.h \
-    queue/taskqueue.h \
     queue/progressbardelegate.h \
     compressor/compressor.h \
     compressor/compressorwrapper.h \
