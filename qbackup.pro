@@ -90,3 +90,6 @@ HEADERS += \
     queue/taskqueueform.h \
     queue/ntaskqueuemodel.h \
     timedmessage/timedmessagebox.h
+
+RESOURCES += \
+    resources/resources.qrc

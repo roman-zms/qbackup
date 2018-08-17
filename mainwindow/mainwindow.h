@@ -7,6 +7,7 @@
 #include <QInputDialog>
 #include <QSettings>
 #include <QMessageBox>
+#include <QSystemTrayIcon>
 
 #include <queue/ntaskqueue.h>
 #include <queue/taskqueueform.h>
@@ -49,19 +50,24 @@ private slots:
     void shutdownSystem();
 
     void on_actionShow_queue_triggered();
-
     void on_actionRunBackup_triggered();
-
     void on_actionSettings_triggered();
-
     void on_actionAdd_to_queue_triggered();
 
-private:
-    QString getScheduleString(const TaskSchedule &schedule);
+protected:
+    virtual void closeEvent(QCloseEvent *event) override;
 
+private:
+    //QString getScheduleString(const TaskSchedule &schedule);
+    QString enterTaskName();
+    void addTaskItemToTree(QTreeWidget *tree, const BackupTask *task);
+    void scheduleBackup(const BackupTask *task);
+    void initTray();
+
+
+private:
     Ui::MainWindow *ui;
 
-    //TaskQueue *taskQueue;
     NTaskQueue *nTaskQueue;
     TaskQueueForm *TQForm;
 
@@ -69,11 +75,11 @@ private:
 
     GeneralSettings *gSettings;
 
-    QString enterTaskName();
+    QSystemTrayIcon *tray;
 
-    void addTaskItemToTree(QTreeWidget *tree, const BackupTask *task);
+    QAction *exitAction;
+    QAction *showHideAction;
 
-    void scheduleBackup(const BackupTask *task);
 };
 
 #endif // MAINWINDOW_H

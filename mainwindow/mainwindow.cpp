@@ -9,18 +9,22 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow),
     //taskQueue(new TaskQueue()),
     nTaskQueue(new NTaskQueue(this)),
-    TQForm(new TaskQueueForm(nTaskQueue))
+    TQForm(new TaskQueueForm(nTaskQueue)),
+    tray(new QSystemTrayIcon(this))
 {
     ui->setupUi(this);
     loadAllTasks();
     //taskQueue->hide();
     TQForm->hide();
 
+    initTray();
+
     connect(ui->treeWidget, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),
             this, 			SLOT(openTaskSettings(QTreeWidgetItem*)));
 
     connect(nTaskQueue, &NTaskQueue::shutdownCommand,
             this, &MainWindow::shutdownSystem);
+
 }
 
 MainWindow::~MainWindow()
@@ -231,4 +235,30 @@ void MainWindow::scheduleBackup(const BackupTask *task)
                             this, &MainWindow::onTaskTimeout, Qt::UniqueConnection);
     else
         disconnect(task, &BackupTask::timeout, this, &MainWindow::onTaskTimeout);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+    event->ignore();
+    this->hide();
+}
+
+void MainWindow::initTray()
+{
+    exitAction = new QAction("Exit", this);
+    showHideAction = new QAction("Show/Hide", this);
+
+    connect(exitAction, &QAction::triggered, qApp, &QApplication::quit);
+    connect(showHideAction, &QAction::triggered, this, [=] () {
+        this->setVisible(!this->isVisible());
+    } );
+
+    QMenu *trayMenu = new QMenu("QBackup", this);
+    trayMenu->addAction(showHideAction);
+    trayMenu->addAction(exitAction);
+
+    QPixmap pixmap(":/images/icon.png");
+    QIcon icon(pixmap.scaled(128, 128));
+    tray->setIcon(icon);
+    tray->setContextMenu(trayMenu);
+    tray->setVisible(true);
 }
