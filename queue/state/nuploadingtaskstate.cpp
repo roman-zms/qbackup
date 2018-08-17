@@ -15,8 +15,6 @@ bool NUploadingTaskState::stop()
 bool NUploadingTaskState::finished()
 {
     setState(factory->uploaded());
-    setCurrentTask(nullptr);
-    getTaskList().removeFirst();
 
     return !queue->start();
 }

@@ -14,7 +14,6 @@
 
 #include "backuptask/backuptask.h"
 #include "tasksettings/tasksettings.h"
-#include "queue/taskqueue.h"
 #include "generalsettings/generalsettings.h"
 #include "backuptask/taskschedule.h"
 
