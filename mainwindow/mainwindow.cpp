@@ -15,7 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     loadAllTasks();
-    //taskQueue->hide();
     TQForm->hide();
 
     initTray();
@@ -34,7 +33,6 @@ MainWindow::~MainWindow()
         tasks.take(key)->deleteLater();
     }
 
-    //delete taskQueue;
     delete ui;
 }
 
@@ -62,9 +60,6 @@ void MainWindow::onTaskTimeout()
     qDebug() << "Timeout "
              << task->specs->getName();
 
-    //taskQueue->addTask(task);
-    //taskQueue->start();
-
     nTaskQueue->put(task);
     nTaskQueue->start();
 }
@@ -78,10 +73,9 @@ void MainWindow::addToQueue()
         BackupTask *task = tasks.value(item->text(0));
 
         if (task->isAbleToPerform()) {
-            //this->taskQueue->addTask(task);
             nTaskQueue->put(task);
         } else {
-            QMessageBox::critical(this, "Error", "Invalid task");
+            QMessageBox::critical(this, tr("Error"), tr("Invalid task"));
         }
     }
 }
@@ -125,7 +119,6 @@ void MainWindow::removeTask()
     QList<QTreeWidgetItem*> items = ui->treeWidget->selectedItems();
 
     QSettings *settings = new QSettings(this);
-    //settings->beginGroup("Tasks");
 
     foreach(QTreeWidgetItem *item, items){
         tasks.take(item->text(0))->deleteLater();
@@ -176,14 +169,12 @@ void MainWindow::on_actionRemoveTask_triggered()
 
 void MainWindow::on_actionShow_queue_triggered()
 {
-    //taskQueue->show();
     TQForm->show();
 }
 
 void MainWindow::on_actionRunBackup_triggered()
 {
     on_actionAdd_to_queue_triggered();
-    //taskQueue->start();
     nTaskQueue->start();
 }
 
@@ -243,8 +234,8 @@ void MainWindow::closeEvent(QCloseEvent *event) {
 
 void MainWindow::initTray()
 {
-    exitAction = new QAction("Exit", this);
-    showHideAction = new QAction("Show/Hide", this);
+    exitAction = new QAction(tr("Exit"), this);
+    showHideAction = new QAction(tr("Show/Hide"), this);
 
     connect(exitAction, &QAction::triggered, qApp, &QApplication::quit);
     connect(showHideAction, &QAction::triggered, this, [=] () {
