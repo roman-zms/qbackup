@@ -49,7 +49,7 @@
     <message>
         <location filename="../mainwindow/mainwindow.ui" line="58"/>
         <source>When</source>
-        <translation>Когда</translation>
+        <translation>Время</translation>
     </message>
     <message>
         <location filename="../mainwindow/mainwindow.ui" line="107"/>
@@ -82,32 +82,70 @@
         <translation>В очередь</translation>
     </message>
     <message>
-        <location filename="../mainwindow/mainwindow.cpp" line="94"/>
+        <location filename="../mainwindow/mainwindow.cpp" line="78"/>
+        <source>Error</source>
+        <translation>Ошибка</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow/mainwindow.cpp" line="78"/>
+        <source>Invalid task</source>
+        <translation>Невалидная задача</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow/mainwindow.cpp" line="88"/>
         <source>Shutdown</source>
         <translation>Завершение работы</translation>
     </message>
     <message>
-        <location filename="../mainwindow/mainwindow.cpp" line="95"/>
+        <location filename="../mainwindow/mainwindow.cpp" line="89"/>
         <source>Do you want to shutdown now? (%1)</source>
-        <translation>Завершить работу?</translation>
+        <translation>Выключить работу? (%1)</translation>
     </message>
     <message>
-        <location filename="../mainwindow/mainwindow.cpp" line="206"/>
+        <location filename="../mainwindow/mainwindow.cpp" line="197"/>
         <source>Name</source>
         <translation>Имя</translation>
     </message>
     <message>
-        <location filename="../mainwindow/mainwindow.cpp" line="207"/>
+        <location filename="../mainwindow/mainwindow.cpp" line="198"/>
         <source>Enter new backup name:</source>
-        <translation>Введите имя новой задачи</translation>
+        <translation>Ведите имя задачи</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow/mainwindow.cpp" line="237"/>
+        <source>Exit</source>
+        <translation>Выход</translation>
+    </message>
+    <message>
+        <location filename="../mainwindow/mainwindow.cpp" line="238"/>
+        <source>Show/Hide</source>
+        <translation>Показать/скрыть</translation>
+    </message>
+</context>
+<context>
+    <name>NTaskQueueModel</name>
+    <message>
+        <location filename="../queue/ntaskqueuemodel.cpp" line="27"/>
+        <source>Name</source>
+        <translation>Имя</translation>
+    </message>
+    <message>
+        <location filename="../queue/ntaskqueuemodel.cpp" line="29"/>
+        <source>Compressing</source>
+        <translation>Сжатие</translation>
+    </message>
+    <message>
+        <location filename="../queue/ntaskqueuemodel.cpp" line="31"/>
+        <source>Uploading</source>
+        <translation>Выгрузка</translation>
     </message>
 </context>
 <context>
     <name>TaskQueueForm</name>
     <message>
         <location filename="../queue/taskqueueform.ui" line="14"/>
-        <source>Form</source>
-        <translation></translation>
+        <source>Queue</source>
+        <translation>Очередь</translation>
     </message>
     <message>
         <location filename="../queue/taskqueueform.ui" line="29"/>
@@ -173,7 +211,7 @@
     <message>
         <location filename="../mainwindow/tasksettings/tasksettings.ui" line="22"/>
         <source>Folder to backup</source>
-        <translation>Копируемая папка</translation>
+        <translation>Папка для копирования</translation>
     </message>
     <message>
         <location filename="../mainwindow/tasksettings/tasksettings.ui" line="39"/>

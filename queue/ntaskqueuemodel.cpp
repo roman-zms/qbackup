@@ -24,11 +24,11 @@ QVariant NTaskQueueModel::headerData(int section, Qt::Orientation orientation, i
     if (orientation == Qt::Horizontal) {
         switch (section) {
         case 0:
-            return "Name";
+            return tr("Name");
         case 1:
-            return "Compressing";
+            return tr("Compressing");
         case 2:
-            return "Uploading";
+            return tr("Uploading");
         }
     }
 
