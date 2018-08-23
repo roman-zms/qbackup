@@ -90,3 +90,5 @@ HEADERS += \
 
 RESOURCES += \
     resources/resources.qrc
+
+TRANSLATIONS += translations/ru_ts
