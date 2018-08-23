@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
 
     if(argc > 1){
         if (QString(argv[1]) == "MINIMIZE")
-        //if(argv[1] == (char*)"MINIMIZE")
             w.hide();
     } else {
         w.show();
